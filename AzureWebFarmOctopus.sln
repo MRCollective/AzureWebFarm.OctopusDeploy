@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "AzureWebFarmOctopus", "AzureWebFarmOctopus\AzureWebFarmOctopus.ccproj", "{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFarm", "WebFarm\WebFarm.csproj", "{46596A51-4879-4896-B27A-844F445E55E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46596A51-4879-4896-B27A-844F445E55E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46596A51-4879-4896-B27A-844F445E55E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46596A51-4879-4896-B27A-844F445E55E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46596A51-4879-4896-B27A-844F445E55E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

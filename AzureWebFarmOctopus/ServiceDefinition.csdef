@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="AzureWebFarmOctopus" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
+  <WebRole name="WebFarm" vmsize="Small">
+    <Runtime executionContext="elevated" />
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="HTTP" endpointName="HTTP" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <Endpoints>
+      <InputEndpoint name="HTTP" protocol="http" port="80" />
+    </Endpoints>
+    <Imports>
+      <Import moduleName="Diagnostics" />
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
+    <LocalResources>
+      <LocalStorage name="Install" cleanOnRoleRecycle="true" sizeInMB="1024" />
+      <LocalStorage name="OctopusDeployments" cleanOnRoleRecycle="true" sizeInMB="2048" />
+    </LocalResources>
+    <ConfigurationSettings>
+      <Setting name="OctopusServer" />
+      <Setting name="OctopusApiKey" />
+      <Setting name="TentacleEnvironment" />
+      <Setting name="TentacleRole" />
+    </ConfigurationSettings>
+  </WebRole>
+</ServiceDefinition>
