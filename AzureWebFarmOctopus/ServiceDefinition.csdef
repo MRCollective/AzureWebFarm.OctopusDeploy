@@ -2,6 +2,30 @@
 <ServiceDefinition name="AzureWebFarmOctopus" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
   <WebRole name="WebFarm" vmsize="Small">
     <Runtime executionContext="elevated" />
+    <Startup>
+      <Task commandLine="Startup\startup.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="PathToInstall">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Install']/@path" />
+          </Variable>
+          <Variable name="PathToDeployments">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Deployments']/@path" />
+          </Variable>
+          <Variable name="OctopusServer">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='OctopusServer']/@value" />
+          </Variable>
+          <Variable name="OctopusApiKey">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='OctopusApiKey']/@value" />
+          </Variable>
+          <Variable name="TentacleEnvironment">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='TentacleEnvironment']/@value" />
+          </Variable>
+          <Variable name="TentacleRole">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='TentacleRole']/@value" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
     <Sites>
       <Site name="Web">
         <Bindings>
@@ -18,8 +42,8 @@
       <Import moduleName="RemoteForwarder" />
     </Imports>
     <LocalResources>
-      <LocalStorage name="Install" cleanOnRoleRecycle="true" sizeInMB="1024" />
-      <LocalStorage name="OctopusDeployments" cleanOnRoleRecycle="true" sizeInMB="2048" />
+      <LocalStorage name="Install" cleanOnRoleRecycle="false" sizeInMB="1024" />
+      <LocalStorage name="Deployments" cleanOnRoleRecycle="true" sizeInMB="2048" />
     </LocalResources>
     <ConfigurationSettings>
       <Setting name="OctopusServer" />

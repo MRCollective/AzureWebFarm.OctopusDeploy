@@ -89,6 +89,12 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="App.config" />
+    <Content Include="Startup\startup.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Startup\startup.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

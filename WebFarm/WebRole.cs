@@ -10,7 +10,7 @@ namespace WebRole1
 {
     public class WebRole : RoleEntryPoint
     {
-        private readonly ILogger _log;
+        /*private readonly ILogger _log;
 
         public WebRole()
         {
@@ -27,7 +27,7 @@ namespace WebRole1
             var tentacleRole = RoleEnvironment.GetConfigurationSettingValue("TentacleRole");
 
             var installPath = RoleEnvironment.GetLocalResource("Install").RootPath;
-            var octopusDeploymentsPath = RoleEnvironment.GetLocalResource("OctopusDeployments").RootPath;
+            var octopusDeploymentsPath = RoleEnvironment.GetLocalResource("Deployments").RootPath;
 
             var tentacleInstallerPath = Path.Combine(installPath, "Octopus.Tentacle.msi");
             var tentacleDir = Path.Combine(installPath, "Tentacle");
@@ -87,6 +87,6 @@ namespace WebRole1
                 _log.Error(e, "Failed to execute {executable} with {arguments}", executable, arguments);
                 throw;
             }
-        }
+        }*/
     }
 }
