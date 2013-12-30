@@ -1,24 +1,25 @@
 powershell.exe -ExecutionPolicy Unrestricted Startup\startup.ps1 >> "%TEMP%\StartupLog.txt" 2>&1
-if NOT ERRORLEVEL 0 GOTO ERROR
-cd /D "%PathToInstall%\Tentacle\Agent"
-echo %cd% >> "%TEMP%\StartupLog.txt" 2>&1
-if NOT ERRORLEVEL 0 GOTO ERROR
-Tentacle.exe create-instance --instance Tentacle --config "%PathToInstall%\Tentacle.config" >> "%TEMP%\StartupLog.txt" 2>&1
-if NOT ERRORLEVEL 0 GOTO ERROR
+IF NOT "%errorlevel%" == "0" GOTO ERROR
 
-echo "success" >> "%TEMP%\StartupLog.txt" 2>&1
+echo "Successfully executed startup script" >> "%TEMP%\StartupLog.txt" 2>&1
 
-start %temp%
-start /w cmd
+REM Uncomment these lines for debugging locally when there isn't an error (or put a breakpoint in WebRole.OnStart()
+REM start %temp%
+REM start /w cmd
 
 EXIT /B 0
 GOTO END
+
 :ERROR
 
-echo "error" >> "%TEMP%\StartupLog.txt" 2>&1
+echo "Error starting role" >> "%TEMP%\StartupLog.txt" 2>&1
 
-start %temp%
-start /w cmd
-
+IF "%ComputeEmulatorRunning%" == "true" (
+	start %temp%
+	start "%temp%\StartupLog.txt"
+	start /w cmd
+)
 EXIT /B 1
+
 :END
+

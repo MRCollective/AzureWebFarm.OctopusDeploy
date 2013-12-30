@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 
-namespace WebRole1
+namespace WebFarm
 {
     public class Global : HttpApplication
     {

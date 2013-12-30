@@ -8,20 +8,8 @@
           <Variable name="PathToInstall">
             <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Install']/@path" />
           </Variable>
-          <Variable name="PathToDeployments">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Deployments']/@path" />
-          </Variable>
-          <Variable name="OctopusServer">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='OctopusServer']/@value" />
-          </Variable>
-          <Variable name="OctopusApiKey">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='OctopusApiKey']/@value" />
-          </Variable>
-          <Variable name="TentacleEnvironment">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='TentacleEnvironment']/@value" />
-          </Variable>
-          <Variable name="TentacleRole">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='TentacleRole']/@value" />
+          <Variable name="ComputeEmulatorRunning">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
           </Variable>
         </Environment>
       </Task>
