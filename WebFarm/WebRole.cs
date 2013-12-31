@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Octopus.Client;
+using Octopus.Client.Model;
 using Serilog;
 
 namespace WebFarm
@@ -54,7 +55,7 @@ namespace WebFarm
             Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _octopusServer, _tentacleEnvironment, _tentacleRole, _octopusApiKey, _name));
             Run(tentaclePath, string.Format("service {0} --install --start --console", instanceArg));
 
-            // todo: Check machine is online and redeploy sites to it
+            // todo: Redeploy sites to it
 
             return true;
         }
@@ -62,7 +63,8 @@ namespace WebFarm
         public override void OnStop()
         {
             // todo: shutdown gracefully if there are pending web requests
-            // todo: de-register machine from Octopus
+            var machine = _repository.Machines.FindByName(_name);
+            _repository.Machines.Delete(machine);
         }
 
         private void Run(string executable, string arguments)
