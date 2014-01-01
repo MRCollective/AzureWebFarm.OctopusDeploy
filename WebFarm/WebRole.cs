@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.Web.Administration;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Octopus.Client;
@@ -65,6 +66,36 @@ namespace WebFarm
             DeployAllCurrentReleasesToThisRole();
 
             return true;
+        }
+
+        public override void Run()
+        {
+            if (RoleEnvironment.IsEmulated)
+                base.Run();
+
+            while (true)
+            {
+                try
+                {
+                    // https://github.com/sandrinodimattia/WindowsAzure-IISApplicationInitializationModule
+                    using (var serverManager = new ServerManager())
+                    {
+                        foreach (var application in serverManager.Sites.SelectMany(site => site.Applications))
+                            application["preloadEnabled"] = true;
+
+                        foreach (var appPool in serverManager.ApplicationPools)
+                            appPool["startMode"] = "AlwaysRunning";
+
+                        serverManager.CommitChanges();
+                    }
+                }
+                catch (Exception e)
+                {
+                    _log.Warning(e, "Failure to configure IIS");
+                }
+
+                Thread.Sleep(TimeSpan.FromMinutes(10));
+            }
         }
 
         public override void OnStop()

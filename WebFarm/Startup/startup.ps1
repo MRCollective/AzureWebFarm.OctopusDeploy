@@ -31,6 +31,7 @@ try
     Write-Output "Installing $TentacleInstallerPath to $TentacleDir"
     Start-Process "msiexec" -ArgumentList "INSTALLLOCATION=""$TentacleDir"" /i ""$TentacleInstallerPath"" /quiet" -Wait
 
+    Write-Output "Setting up ACLs so IIS App Pools have full access to $ApplicationsPath"
     if (-not (Test-Path $ApplicationsPath)) {
         New-Item -type directory -path "$ApplicationsPath"
     }
@@ -39,6 +40,11 @@ try
     $Acl.SetAccessRule($IisAppPoolAccess)
     Set-Acl "$ApplicationsPath" -AclObject $Acl
     Get-ChildItem "$ApplicationsPath" -Recurse -Force | Set-Acl -AclObject $Acl
+
+    if ($Emulated -ne "true") {
+        Write-Output "Installing IIS App Initialisation Module for performance"
+        PKGMGR.EXE /iu:IIS-ApplicationInit
+    }
 
     exit 0
 }
