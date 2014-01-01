@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Octopus.Client;
-using Octopus.Client.Model;
 using Serilog;
 
 namespace WebFarm
@@ -18,6 +19,8 @@ namespace WebFarm
         private readonly string _tentacleEnvironment;
         private readonly string _tentacleRole;
         private readonly string _name;
+
+        private static string[] _roleConfigurations = new[] {"OctopusServer", "OctopusApiKey", "TentacleEnvironment", "TentacleRole"};
 
         public WebRole()
         {
@@ -35,6 +38,7 @@ namespace WebFarm
                 ? Environment.MachineName
                 : string.Format("{0}_{1}", RoleEnvironment.CurrentRoleInstance.Id, _tentacleEnvironment);
 
+            RoleEnvironment.Changing += RoleEnvironmentChanging;
             // todo: request recycle for the above configuration settings being changed
 
             var endpoint = new OctopusServerEndpoint(_octopusServer, _octopusApiKey);
@@ -62,9 +66,35 @@ namespace WebFarm
 
         public override void OnStop()
         {
-            // todo: shutdown gracefully if there are pending web requests
+            WaitForAllHttpRequestsToEnd();
+
             var machine = _repository.Machines.FindByName(_name);
             _repository.Machines.Delete(machine);
+        }
+
+        private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // If there is a setting change for something that is used to register with Octopus
+            //  then we need to recycle the role so it re-registers with the Octopus Server
+            var recycle = e.Changes
+                .OfType<RoleEnvironmentConfigurationSettingChange>()
+                .Any(c => _roleConfigurations.Contains(c.ConfigurationSettingName));
+            if (recycle)
+                RoleEnvironment.RequestRecycle();
+        }
+
+        private void WaitForAllHttpRequestsToEnd()
+        {
+            // http://blogs.msdn.com/b/windowsazure/archive/2013/01/14/the-right-way-to-handle-azure-onstop-events.aspx
+            var pcrc = new PerformanceCounter("ASP.NET", "Requests Current", "");
+            while (true)
+            {
+                var rc = pcrc.NextValue();
+                _log.Information("ASP.NET Requests Current = {0}, {1}.", rc, rc <= 0 ? "permitting role exit" : "blocking role exit");
+                if (rc <= 0)
+                    break;
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
         }
 
         private void Run(string executable, string arguments)
