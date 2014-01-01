@@ -8,6 +8,9 @@
           <Variable name="PathToInstall">
             <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Install']/@path" />
           </Variable>
+          <Variable name="PathToDeployments">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Deployments']/@path" />
+          </Variable>
           <Variable name="ComputeEmulatorRunning">
             <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
           </Variable>
