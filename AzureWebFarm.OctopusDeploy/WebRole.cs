@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading;
 using AzureWebFarm.OctopusDeploy.Infrastructure;
-using Microsoft.Web.Administration;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Serilog;
 
@@ -30,6 +28,7 @@ namespace AzureWebFarm.OctopusDeploy
 
         public void Run()
         {
+            // Don't want to configure IIS if we are emulating; just sleep forever
             if (RoleEnvironment.IsEmulated)
                 Thread.Sleep(-1);
 
@@ -37,17 +36,7 @@ namespace AzureWebFarm.OctopusDeploy
             {
                 try
                 {
-                    // https://github.com/sandrinodimattia/WindowsAzure-IISApplicationInitializationModule
-                    using (var serverManager = new ServerManager())
-                    {
-                        foreach (var application in serverManager.Sites.SelectMany(site => site.Applications))
-                            application["preloadEnabled"] = true;
-
-                        foreach (var appPool in serverManager.ApplicationPools)
-                            appPool["startMode"] = "AlwaysRunning";
-
-                        serverManager.CommitChanges();
-                    }
+                    IisEnvironment.ActivateAppInitialisationModuleForAllSites();
                 }
                 catch (Exception e)
                 {
@@ -63,7 +52,7 @@ namespace AzureWebFarm.OctopusDeploy
         public void OnStop()
         {
             _octopusDeploy.DeleteMachine();
-            AzureEnvironment.WaitForAllHttpRequestsToEnd();
+            IisEnvironment.WaitForAllHttpRequestsToEnd();
         }
     }
 
