@@ -15,13 +15,15 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
     {
         private readonly string _machineName;
         private readonly ConfigSettings _config;
-        private readonly OctopusRepository _repository;
+        private readonly IProcessRunner _processRunner;
+        private readonly IOctopusRepository _repository;
 
-        public OctopusDeploy(string machineName, ConfigSettings config)
+        public OctopusDeploy(string machineName, ConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner)
         {
             _machineName = machineName;
             _config = config;
-            _repository = new OctopusRepository(new OctopusServerEndpoint(_config.OctopusServer, _config.OctopusApiKey));
+            _processRunner = processRunner;
+            _repository = repository;
         }
 
         public void ConfigureTentacle()
@@ -32,12 +34,12 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             var tentacleDir = Path.Combine(installPath, "Tentacle");
             var tentaclePath = Path.Combine(Path.Combine(tentacleDir, "Agent"), "Tentacle.exe");
 
-            ProcessRunner.Run(tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", instanceArg, Path.Combine(installPath, "Tentacle.config")));
-            ProcessRunner.Run(tentaclePath, string.Format("new-certificate --console"));
-            ProcessRunner.Run(tentaclePath, string.Format("configure {0} --home \"{1}\" --console", instanceArg, octopusDeploymentsPath.Substring(0, octopusDeploymentsPath.Length - 1)));
-            ProcessRunner.Run(tentaclePath, string.Format("configure {0} --app \"{1}\" --console", instanceArg, Path.Combine(octopusDeploymentsPath, "Applications")));
-            ProcessRunner.Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _machineName));
-            ProcessRunner.Run(tentaclePath, string.Format("service {0} --install --start --console", instanceArg));
+            _processRunner.Run(tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", instanceArg, Path.Combine(installPath, "Tentacle.config")));
+            _processRunner.Run(tentaclePath, string.Format("new-certificate --console"));
+            _processRunner.Run(tentaclePath, string.Format("configure {0} --home \"{1}\" --console", instanceArg, octopusDeploymentsPath.Substring(0, octopusDeploymentsPath.Length - 1)));
+            _processRunner.Run(tentaclePath, string.Format("configure {0} --app \"{1}\" --console", instanceArg, Path.Combine(octopusDeploymentsPath, "Applications")));
+            _processRunner.Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _machineName));
+            _processRunner.Run(tentaclePath, string.Format("service {0} --install --start --console", instanceArg));
         }
 
         public void DeleteMachine()
@@ -61,7 +63,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                     .Select(currentRelease => _repository.Deployments.Create(
                         new DeploymentResource
                         {
-                            Comments = "Automated startup deployment by " + RoleEnvironment.CurrentRoleInstance.Id,
+                            Comments = "Automated startup deployment by " + _machineName,
                             EnvironmentId = currentRelease.EnvironmentId,
                             ReleaseId = currentRelease.ReleaseId,
                             SpecificMachineIds = new ReferenceCollection(new[] {machineId})

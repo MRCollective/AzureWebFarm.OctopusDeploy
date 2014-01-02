@@ -4,9 +4,14 @@ using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy.Infrastructure
 {
-    internal static class ProcessRunner
+    internal interface IProcessRunner
     {
-        public static void Run(string executable, string arguments)
+        void Run(string executable, string arguments);
+    }
+
+    internal class ProcessRunner : IProcessRunner
+    {
+        public void Run(string executable, string arguments)
         {
             Log.Debug("Running {0} with {1}", executable, arguments);
 

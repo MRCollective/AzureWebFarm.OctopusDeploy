@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using AzureWebFarm.OctopusDeploy.Infrastructure;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using Octopus.Client;
 using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy
@@ -15,7 +16,12 @@ namespace AzureWebFarm.OctopusDeploy
         {
             Log.Logger = Logging.GetAzureLogger();
             _config = new ConfigSettings(RoleEnvironment.GetConfigurationSettingValue);
-            _octopusDeploy = new Infrastructure.OctopusDeploy(machineName ?? AzureEnvironment.GetMachineName(_config), _config);
+
+            machineName = machineName ?? AzureEnvironment.GetMachineName(_config);
+            var octopusRepository = new OctopusRepository(new OctopusServerEndpoint(_config.OctopusServer, _config.OctopusApiKey));
+            var processRunner = new ProcessRunner();
+            _octopusDeploy = new Infrastructure.OctopusDeploy(machineName, _config, octopusRepository, processRunner);
+
             AzureEnvironment.RequestRecycleIfConfigSettingChanged(_config);
         }
 
