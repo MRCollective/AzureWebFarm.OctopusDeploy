@@ -36,7 +36,7 @@
       <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="2.0.3" />
       <dependency id="WindowsAzure.Storage" version="2.1.0.3" />
       <dependency id="Serilog" version="1.2.4" />
-      <dependency id="Serilog.Sinks.AzureTableStorage" version="0.99" />
+      <dependency id="Serilog.Sinks.AzureTableStorage" version="0.9.9" />
       <dependency id="Microsoft.Web.Administration" version="7.0.0.0" />
       <dependency id="Microsoft.Web.Xdt" version="1.0.0" />
     </dependencies>
@@ -49,6 +49,7 @@
     <file src="readme.txt" />
     <file src="..\ExampleWebFarm\Startup\*.*" target="content\Startup" />
     <file src="..\ExampleWebFarm\App.config" target="tools" />
+    <file src="..\ExampleWebFarm\WebRole.cs" target="content" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.dll" target="lib\NET45" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.pdb" target="lib\NET45" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.XML" target="lib\NET45" />
