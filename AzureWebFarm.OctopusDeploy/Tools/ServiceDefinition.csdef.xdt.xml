@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<x:ServiceDefinition xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
+  <x:WebRole>
+    <x:Startup xdt:Transform="InsertIfMissing" />
+    <x:Startup>
+      <x:Task commandLine="Startup\startup.cmd" executionContext="elevated" taskType="simple" xdt:Transform="InsertIfMissing" xdt:Locator="Match(commandLine)">
+        <x:Environment>
+          <x:Variable name="PathToInstall">
+            <x:RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Install']/@path" />
+          </x:Variable>
+          <x:Variable name="PathToDeployments">
+            <x:RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Deployments']/@path" />
+          </x:Variable>
+          <x:Variable name="ComputeEmulatorRunning">
+            <x:RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </x:Variable>
+        </x:Environment>
+      </x:Task>
+    </x:Startup>
+    <x:LocalResources xdt:Transform="InsertIfMissing" />
+    <x:LocalResources>
+      <x:LocalStorage name="Install" cleanOnRoleRecycle="false" sizeInMB="1024" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:LocalStorage name="Deployments" cleanOnRoleRecycle="true" sizeInMB="19456" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+    </x:LocalResources>
+    <x:ConfigurationSettings xdt:Transform="InsertIfMissing" />
+    <x:ConfigurationSettings>
+      <x:Setting name="OctopusServer" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="OctopusApiKey" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="TentacleEnvironment" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="TentacleRole" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+    </x:ConfigurationSettings>
+  </x:WebRole>
+</x:ServiceDefinition>

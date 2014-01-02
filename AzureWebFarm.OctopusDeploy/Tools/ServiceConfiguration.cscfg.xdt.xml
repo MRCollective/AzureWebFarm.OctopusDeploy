@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<x:ServiceConfiguration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
+  <x:Role>
+    <x:ConfigurationSettings>
+      <x:Setting name="OctopusServer" value="http://OCTOPUSSERVERURL/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="OctopusApiKey" value="API-OCTOPUSAPIKEY" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="TentacleEnvironment" value="ENVIRONMENT" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="TentacleRole" value="ROLE" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+    </x:ConfigurationSettings>
+  </x:Role>
+</x:ServiceConfiguration>

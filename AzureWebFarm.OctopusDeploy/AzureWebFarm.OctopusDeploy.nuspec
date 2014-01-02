@@ -52,6 +52,7 @@
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.dll" target="lib\NET45" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.pdb" target="lib\NET45" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.XML" target="lib\NET45" />
+    <file src="Tools\*.*" target="tools" />
     <file src="**\*.cs" exclude="obj\**\*.*" target="src" />
   </files>
 </package>

@@ -100,9 +100,13 @@
   <ItemGroup>
     <None Include="AzureWebFarm.OctopusDeploy.nuspec" />
     <None Include="packages.config" />
+    <None Include="Tools\install.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />
+    <Content Include="Tools\CloudProject.ccproj.xdt.xml" />
+    <Content Include="Tools\ServiceConfiguration.cscfg.xdt.xml" />
+    <Content Include="Tools\ServiceDefinition.csdef.xdt.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

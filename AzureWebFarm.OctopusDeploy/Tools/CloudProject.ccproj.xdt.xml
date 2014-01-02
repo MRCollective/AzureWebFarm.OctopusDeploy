@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<x:Project xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/developer/msbuild/2003">
+  <x:Target Name="CopyAppConfigurationIntoPackage" BeforeTargets="AfterPackageComputeService" xdt:Transform="InsertIfMissing" xdt:Locator="Match(Name)">
+    <x:Copy SourceFiles="%WebProjectDir%\App.config" DestinationFiles="$(ProjectDir)obj\$(Configuration)\%WebProjectName%\bin\%WebAssemblyName%.dll.config" />
+  </x:Target>
+</x:Project>
