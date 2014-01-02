@@ -94,5 +94,10 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             if (currentStatuses.Any(s => s == TaskState.Failed || s == TaskState.TimedOut))
                 throw new Exception("Failed to deploy to this role - at least one necessary deployment either failed or timed out - recycling role to try again");
         }
+
+        public static IOctopusRepository GetRepository(ConfigSettings config)
+        {
+            return new OctopusRepository(new OctopusServerEndpoint(config.OctopusServer, config.OctopusApiKey));
+        }
     }
 }

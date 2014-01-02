@@ -9,20 +9,27 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         private const string OctopusApiKeyConfigName = "OctopusApiKey";
         private const string TentacleEnvironmentConfigName = "TentacleEnvironment";
         private const string TentacleRoleConfigName = "TentacleRole";
+        private const string TentacleDeploymentsPathConfigName = "Deployments";
+        private const string TentacleInstallPathConfigName = "Install";
 
-        private static readonly string[] RoleConfigurations = new[] { OctopusServerConfigName, OctopusApiKeyConfigName, TentacleEnvironmentConfigName, TentacleRoleConfigName };
+        private static readonly string[] ConfigSettingsNames = new[] { OctopusServerConfigName, OctopusApiKeyConfigName, TentacleEnvironmentConfigName, TentacleRoleConfigName };
 
         private static string _octopusServer;
         private static string _octopusApiKey;
         private static string _tentacleEnvironment;
         private static string _tentacleRole;
+        private readonly string _tentacleDeploymentsPath;
+        private readonly string _tentacleInstallPath;
 
-        public ConfigSettings(Func<string, string> configSettingsGetter)
+        public ConfigSettings(Func<string, string> configSettingsGetter, Func<string, string> configPathGetter)
         {
             _octopusServer = configSettingsGetter(OctopusServerConfigName);
             _octopusApiKey = configSettingsGetter(OctopusServerConfigName);
             _tentacleEnvironment = configSettingsGetter(OctopusServerConfigName);
             _tentacleRole = configSettingsGetter(OctopusServerConfigName);
+
+            _tentacleDeploymentsPath = configPathGetter(TentacleDeploymentsPathConfigName);
+            _tentacleInstallPath = configPathGetter(TentacleInstallPathConfigName);
         }
 
         public string OctopusServer { get { return _octopusServer; } }
@@ -30,9 +37,12 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         public string TentacleEnvironment { get { return _tentacleEnvironment; } }
         public string TentacleRole { get { return _tentacleRole; } }
 
-        public bool IsSettingName(string name)
+        public string TentacleDeploymentsPath { get { return _tentacleDeploymentsPath; } }
+        public string TentacleInstallPath { get { return _tentacleInstallPath; } }
+
+        public bool IsConfigSettingName(string name)
         {
-            return RoleConfigurations.Contains(name);
+            return ConfigSettingsNames.Contains(name);
         }
     }
 }

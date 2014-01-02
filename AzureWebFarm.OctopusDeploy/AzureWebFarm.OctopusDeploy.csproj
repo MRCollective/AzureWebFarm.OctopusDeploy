@@ -90,7 +90,6 @@
     <Compile Include="Infrastructure\AzureEnvironment.cs" />
     <Compile Include="Infrastructure\ConfigSettings.cs" />
     <Compile Include="Infrastructure\IisEnvironment.cs" />
-    <Compile Include="Infrastructure\Logging.cs" />
     <Compile Include="Infrastructure\OctopusDeploy.cs" />
     <Compile Include="Infrastructure\ProcessRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
