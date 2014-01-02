@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "AzureWebFarmOctopus", "AzureWebFarmOctopus\AzureWebFarmOctopus.ccproj", "{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}"
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "AzureWebFarm.OctopusDeploy.Example", "AzureWebFarm.OctopusDeploy.Example\AzureWebFarm.OctopusDeploy.Example.ccproj", "{4457CE61-E327-4C47-B0F8-1FDB4AFAE451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFarm", "WebFarm\WebFarm.csproj", "{46596A51-4879-4896-B27A-844F445E55E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleWebFarm", "ExampleWebFarm\ExampleWebFarm.csproj", "{46596A51-4879-4896-B27A-844F445E55E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{272569CE-7294-4FC0-9AA6-284372CEABF2}"
 	ProjectSection(SolutionItems) = preProject

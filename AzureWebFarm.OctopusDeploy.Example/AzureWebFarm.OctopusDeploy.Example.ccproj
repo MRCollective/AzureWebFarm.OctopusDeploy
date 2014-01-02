@@ -11,7 +11,7 @@
     <RootNamespace>AzureWebFarmOctopus</RootNamespace>
     <AssemblyName>AzureWebFarmOctopus</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
-    <Name>AzureWebFarmOctopus</Name>
+    <Name>AzureWebFarm.OctopusDeploy.Example</Name>
     <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,24 +39,24 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Profiles" />
-    <Folder Include="WebFarmContent" />
+    <Folder Include="ExampleWebFarmContent" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="WebFarmContent\diagnostics.wadcfg">
+    <Content Include="ExampleWebFarmContent\diagnostics.wadcfg">
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebFarm\WebFarm.csproj">
-      <Name>WebFarm</Name>
+    <PublishProfile Include="Profiles\robdmoorewebfarmProduction.azurePubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExampleWebFarm\ExampleWebFarm.csproj">
+      <Name>ExampleWebFarm</Name>
       <Project>{46596a51-4879-4896-b27a-844f445e55e7}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>WebFarm</RoleName>
+      <RoleName>ExampleWebFarm</RoleName>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PublishProfile Include="Profiles\robdmoorewebfarmProduction.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
@@ -65,7 +65,7 @@
   </PropertyGroup>
   <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
   <PropertyGroup>
-    <WebProjectName>WebFarm</WebProjectName>
+    <WebProjectName>ExampleWebFarm</WebProjectName>
   </PropertyGroup>
   <Target Name="CopyAppConfigurationIntoPackage" BeforeTargets="AfterPackageComputeService">
     <Copy SourceFiles="$(ProjectDir)..\$(WebProjectName)\App.config" DestinationFiles="$(ProjectDir)obj\$(Configuration)\$(WebProjectName)\bin\$(WebProjectName).dll.config" />
