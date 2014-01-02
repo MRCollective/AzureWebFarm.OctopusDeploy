@@ -58,6 +58,7 @@ namespace WebFarm
             var tentaclePath = Path.Combine(Path.Combine(tentacleDir, "Agent"), "Tentacle.exe");
 
             Run(tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", instanceArg, Path.Combine(installPath, "Tentacle.config")));
+            Run(tentaclePath, string.Format("new-certificate --console"));
             Run(tentaclePath, string.Format("configure {0} --home \"{1}\" --console", instanceArg, octopusDeploymentsPath.Substring(0, octopusDeploymentsPath.Length - 1)));
             Run(tentaclePath, string.Format("configure {0} --app \"{1}\" --console", instanceArg, Path.Combine(octopusDeploymentsPath, "Applications")));
             Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _octopusServer, _tentacleEnvironment, _tentacleRole, _octopusApiKey, _name));
@@ -96,7 +97,9 @@ namespace WebFarm
 
                 Thread.Sleep(TimeSpan.FromMinutes(10));
             }
+        // ReSharper disable FunctionNeverReturns
         }
+        // ReSharper restore FunctionNeverReturns
 
         public override void OnStop()
         {
@@ -166,6 +169,7 @@ namespace WebFarm
 
         private void DeployAllCurrentReleasesToThisRole()
         {
+            var machineId = _repository.Machines.FindByName(_name).Id;
             var environment = _repository.Environments.FindByName(_tentacleEnvironment).Id;
 
             var dashboard = _repository.Dashboards.GetDashboard();
@@ -175,9 +179,10 @@ namespace WebFarm
                 .Select(currentRelease => _repository.Deployments.Create(
                     new DeploymentResource
                     {
-                        Comments = "Automated deployment by " + RoleEnvironment.CurrentRoleInstance.Id,
+                        Comments = "Automated startup deployment by " + RoleEnvironment.CurrentRoleInstance.Id,
                         EnvironmentId = currentRelease.EnvironmentId,
-                        ReleaseId = currentRelease.ReleaseId
+                        ReleaseId = currentRelease.ReleaseId,
+                        SpecificMachineIds = new ReferenceCollection(new[]{machineId})
                     }
                 ))
                 .Select(d => d.TaskId)
