@@ -37,6 +37,7 @@
       <dependency id="WindowsAzure.Storage" version="2.1.0.3" />
       <dependency id="Serilog" version="1.2.4" />
       <dependency id="Serilog.Sinks.AzureTableStorage" version="0.99" />
+      <dependency id="Microsoft.Web.Administration" version="7.0.0.0" />
     </dependencies>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="Microsoft.WindowsAzure.ServiceRuntime" targetFramework="NET45" />
