@@ -5,13 +5,10 @@ using System.Linq;
 using System.Threading;
 using Microsoft.Web.Administration;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.Storage;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 
 namespace AzureWebFarm.OctopusDeploy
 {
@@ -29,10 +26,7 @@ namespace AzureWebFarm.OctopusDeploy
 
         public WebRole()
         {
-            _log = new LoggerConfiguration()
-                .WriteTo.AzureTableStorage(CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString")))
-                .Enrich.With<RoleEnvironmentEnricher>()
-                .CreateLogger();
+            _log = Infrastructure.Logging.GetAzureLogger();
 
             _octopusServer = RoleEnvironment.GetConfigurationSettingValue("OctopusServer");
             _octopusApiKey = RoleEnvironment.GetConfigurationSettingValue("OctopusApiKey");
@@ -206,11 +200,5 @@ namespace AzureWebFarm.OctopusDeploy
         }
     }
 
-    class RoleEnvironmentEnricher : ILogEventEnricher
-    {
-        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-        {
-            logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("InstanceId", RoleEnvironment.CurrentRoleInstance.Id));
-        }
-    }
+    
 }
