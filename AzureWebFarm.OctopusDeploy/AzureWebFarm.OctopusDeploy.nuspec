@@ -1,0 +1,53 @@
+﻿<?xml version='1.0' encoding='UTF-8'?> 
+<package>
+  <metadata>
+    <id>
+      AzureWebFarm.OctopusDeploy
+    </id>
+    <version>
+      1.0.0.0
+    </version>
+    <authors>
+      Robert Moore, Matt Davies
+    </authors>
+    <description>
+      Scalable, OctopusDeploy-powered webfarm using Windows Azure Web Roles.
+    </description>
+    <projectUrl>
+      https://github.com/MRCollective/AzureWebFarm.OctopusDeploy
+    </projectUrl>
+    <licenseUrl>
+      https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/LICENSE
+    </licenseUrl>
+    <iconUrl>
+      https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png
+    </iconUrl>
+    <releaseNotes>
+      Please see https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/BREAKING_CHANGES.md for any breaking changes.
+    </releaseNotes>
+    <tags>
+      azure iis web-farm octopusdeploy web-role scalable
+    </tags>
+    <language>
+      en-US
+    </language>
+    <dependencies>
+      <dependency id="Octopus.Client" version="2.0.8.977" />
+      <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="2.0.3" />
+      <dependency id="WindowsAzure.Storage" version="2.1.0.3" />
+      <dependency id="Serilog" version="1.2.4" />
+      <dependency id="Serilog.Sinks.AzureTableStorage" version="0.99" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.WindowsAzure.ServiceRuntime" targetFramework="NET45" />
+      <frameworkAssembly assemblyName="Microsoft.WindowsAzure.Diagnostics" targetFramework="NET45" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="readme.txt" />
+    <file src="bin\Release\AzureWebFarm.OctopusDeploy.dll" target="lib\NET45" />
+    <file src="bin\Release\AzureWebFarm.OctopusDeploy.pdb" target="lib\NET45" />
+    <file src="bin\Release\AzureWebFarm.OctopusDeploy.XML" target="lib\NET45" />
+    <file src="**\*.cs" exclude="obj\**\*.*" target="src" />
+  </files>
+</package>
