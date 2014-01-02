@@ -6,11 +6,18 @@ using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy
 {
+    /// <summary>
+    /// Coordinates an OctopusDeploy-powered webfarm Azure Web Role.
+    /// </summary>
     public class WebFarmRole
     {
         private readonly ConfigSettings _config;
         private readonly Infrastructure.OctopusDeploy _octopusDeploy;
 
+        /// <summary>
+        /// Create the web role coordinator.
+        /// </summary>
+        /// <param name="machineName">Specify the machineName if you would like to override the default machine name configuration.</param>
         public WebFarmRole(string machineName = null)
         {
             Log.Logger = AzureEnvironment.GetAzureLogger();
@@ -24,6 +31,10 @@ namespace AzureWebFarm.OctopusDeploy
             AzureEnvironment.RequestRecycleIfConfigSettingChanged(_config);
         }
 
+        /// <summary>
+        /// Call from the RoleEntryPoint.OnStart() method.
+        /// </summary>
+        /// <returns>true; throws exception is there is an error</returns>
         public bool OnStart()
         {
             _octopusDeploy.ConfigureTentacle();
@@ -31,6 +42,10 @@ namespace AzureWebFarm.OctopusDeploy
             return true;
         }
 
+        /// <summary>
+        /// Call from the RoleEntryPoint.Run() method.
+        /// Note: This method is an infinite loop; call from a Thread/Task if you want to run other code alongside.
+        /// </summary>
         public void Run()
         {
             // Don't want to configure IIS if we are emulating; just sleep forever
@@ -54,6 +69,9 @@ namespace AzureWebFarm.OctopusDeploy
         }
         // ReSharper restore FunctionNeverReturns
 
+        /// <summary>
+        /// Call from RoleEntryPoint.OnStop().
+        /// </summary>
         public void OnStop()
         {
             _octopusDeploy.DeleteMachine();
