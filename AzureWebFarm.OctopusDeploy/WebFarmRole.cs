@@ -6,12 +6,12 @@ using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy
 {
-    public class WebRole
+    public class WebFarmRole
     {
         private readonly ConfigSettings _config;
         private readonly Infrastructure.OctopusDeploy _octopusDeploy;
 
-        public WebRole(string machineName = null)
+        public WebFarmRole(string machineName = null)
         {
             Log.Logger = AzureEnvironment.GetAzureLogger();
             _config = AzureEnvironment.GetConfigSettings();

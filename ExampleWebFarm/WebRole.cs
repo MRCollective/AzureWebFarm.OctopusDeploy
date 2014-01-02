@@ -4,26 +4,26 @@ namespace WebFarm
 {
     public class WebRole : RoleEntryPoint
     {
-        private readonly AzureWebFarm.OctopusDeploy.WebRole _webRole;
+        private readonly AzureWebFarm.OctopusDeploy.WebFarmRole _webFarmRole;
 
         public WebRole()
         {
-            _webRole = new AzureWebFarm.OctopusDeploy.WebRole();
+            _webFarmRole = new AzureWebFarm.OctopusDeploy.WebFarmRole();
         }
 
         public override bool OnStart()
         {
-            return _webRole.OnStart();
+            return _webFarmRole.OnStart();
         }
 
         public override void Run()
         {
-            _webRole.Run();
+            _webFarmRole.Run();
         }
 
         public override void OnStop()
         {
-            _webRole.OnStop();
+            _webFarmRole.OnStop();
         }
     }
 }
