@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AzureWebFarm.OctopusDeploy")]
+[assembly: AssemblyTitle("AzureWebFarm.OctopusDeploy.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AzureWebFarm.OctopusDeploy")]
+[assembly: AssemblyProduct("AzureWebFarm.OctopusDeploy.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e808c5af-a2ba-4aac-8e3e-bc48f18707cc")]
+[assembly: Guid("697dc9dc-d656-4518-b6cc-eaf37a4386a7")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,5 +34,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: InternalsVisibleTo("AzureWebFarm.OctopusDeploy.Tests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

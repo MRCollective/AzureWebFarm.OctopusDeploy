@@ -24,9 +24,9 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         public ConfigSettings(Func<string, string> configSettingsGetter, Func<string, string> configPathGetter)
         {
             _octopusServer = configSettingsGetter(OctopusServerConfigName);
-            _octopusApiKey = configSettingsGetter(OctopusServerConfigName);
-            _tentacleEnvironment = configSettingsGetter(OctopusServerConfigName);
-            _tentacleRole = configSettingsGetter(OctopusServerConfigName);
+            _octopusApiKey = configSettingsGetter(OctopusApiKeyConfigName);
+            _tentacleEnvironment = configSettingsGetter(TentacleEnvironmentConfigName);
+            _tentacleRole = configSettingsGetter(TentacleRoleConfigName);
 
             _tentacleDeploymentsPath = configPathGetter(TentacleDeploymentsPathConfigName);
             _tentacleInstallPath = configPathGetter(TentacleInstallPathConfigName);
