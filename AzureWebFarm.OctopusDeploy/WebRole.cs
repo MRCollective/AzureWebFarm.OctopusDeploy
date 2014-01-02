@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using AzureWebFarm.OctopusDeploy.Infrastructure;
 using Microsoft.Web.Administration;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Octopus.Client;
@@ -16,31 +17,17 @@ namespace AzureWebFarm.OctopusDeploy
     {
         private readonly ILogger _log;
         private readonly IOctopusRepository _repository;
-        private readonly string _octopusServer;
-        private readonly string _octopusApiKey;
-        private readonly string _tentacleEnvironment;
-        private readonly string _tentacleRole;
         private readonly string _name;
-
-        private static readonly string[] RoleConfigurations = new[] {"OctopusServer", "OctopusApiKey", "TentacleEnvironment", "TentacleRole"};
+        private readonly ConfigSettings _config;
 
         public WebRole()
         {
-            _log = Infrastructure.Logging.GetAzureLogger();
+            _log = Logging.GetAzureLogger();
+            _config = new ConfigSettings(RoleEnvironment.GetConfigurationSettingValue);
+            _name = AzureEnvironment.GetMachineName(_config);
+            _repository = new OctopusRepository(new OctopusServerEndpoint(_config.OctopusServer, _config.OctopusApiKey));
 
-            _octopusServer = RoleEnvironment.GetConfigurationSettingValue("OctopusServer");
-            _octopusApiKey = RoleEnvironment.GetConfigurationSettingValue("OctopusApiKey");
-            _tentacleEnvironment = RoleEnvironment.GetConfigurationSettingValue("TentacleEnvironment");
-            _tentacleRole = RoleEnvironment.GetConfigurationSettingValue("TentacleRole");
-
-            _name = RoleEnvironment.IsEmulated
-                ? Environment.MachineName
-                : string.Format("{0}_{1}", RoleEnvironment.CurrentRoleInstance.Id, _tentacleEnvironment);
-
-            RoleEnvironment.Changing += RoleEnvironmentChanging;
-
-            var endpoint = new OctopusServerEndpoint(_octopusServer, _octopusApiKey);
-            _repository = new OctopusRepository(endpoint);
+            AzureEnvironment.RequestRecycleIfConfigSettingChanged(_config);
         }
 
         public bool OnStart()
@@ -55,7 +42,7 @@ namespace AzureWebFarm.OctopusDeploy
             Run(tentaclePath, string.Format("new-certificate --console"));
             Run(tentaclePath, string.Format("configure {0} --home \"{1}\" --console", instanceArg, octopusDeploymentsPath.Substring(0, octopusDeploymentsPath.Length - 1)));
             Run(tentaclePath, string.Format("configure {0} --app \"{1}\" --console", instanceArg, Path.Combine(octopusDeploymentsPath, "Applications")));
-            Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _octopusServer, _tentacleEnvironment, _tentacleRole, _octopusApiKey, _name));
+            Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _name));
             Run(tentaclePath, string.Format("service {0} --install --start --console", instanceArg));
 
             DeployAllCurrentReleasesToThisRole();
@@ -101,17 +88,6 @@ namespace AzureWebFarm.OctopusDeploy
 
             var machine = _repository.Machines.FindByName(_name);
             _repository.Machines.Delete(machine);
-        }
-
-        private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
-        {
-            // If there is a setting change for something that is used to register with Octopus
-            //  then we need to recycle the role so it re-registers with the Octopus Server
-            var recycle = e.Changes
-                .OfType<RoleEnvironmentConfigurationSettingChange>()
-                .Any(c => RoleConfigurations.Contains(c.ConfigurationSettingName));
-            if (recycle)
-                RoleEnvironment.RequestRecycle();
         }
 
         private void WaitForAllHttpRequestsToEnd()
@@ -164,7 +140,7 @@ namespace AzureWebFarm.OctopusDeploy
         private void DeployAllCurrentReleasesToThisRole()
         {
             var machineId = _repository.Machines.FindByName(_name).Id;
-            var environment = _repository.Environments.FindByName(_tentacleEnvironment).Id;
+            var environment = _repository.Environments.FindByName(_config.TentacleEnvironment).Id;
 
             var dashboard = _repository.Dashboards.GetDashboard();
             var releaseTasks = dashboard.Items
