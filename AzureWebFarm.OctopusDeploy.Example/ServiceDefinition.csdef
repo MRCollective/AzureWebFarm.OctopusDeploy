@@ -34,7 +34,7 @@
     </Imports>
     <LocalResources>
       <LocalStorage name="Install" cleanOnRoleRecycle="false" sizeInMB="1024" />
-      <LocalStorage name="Deployments" cleanOnRoleRecycle="true" sizeInMB="2048" />
+      <LocalStorage name="Deployments" cleanOnRoleRecycle="true" sizeInMB="19456" />
     </LocalResources>
     <ConfigurationSettings>
       <Setting name="OctopusServer" />
