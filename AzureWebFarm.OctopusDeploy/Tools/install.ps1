@@ -54,3 +54,12 @@ $xdt = Get-Content (Join-Path $toolsPath "CloudProject.ccproj.xdt.xml")
 $assemblyName = ($project.Properties | Where-Object { $_.Name -eq "AssemblyName" } | Select-Object -First 1).Value
 $xdt.Replace("%WebProjectName%", $project.Name).Replace("%WebProjectDir%", $projectPath).Replace("%WebAssemblyName%", $assemblyName) | Set-Content $tempFile
 XmlTransform $ccProj.FullName $tempFile
+
+$startupFolder = $project.ProjectItems |
+    Where-Object { $_.Name -eq "Startup" } |
+    Select-Object -First 1
+$startupFolder.ProjectItems |
+    ForEach-Object {
+        Write-Host "Setting Startup\$($_.Name) as Copy always"
+        $_.Properties.Item("CopyToOutputDirectory").Value = [int]1
+    }
