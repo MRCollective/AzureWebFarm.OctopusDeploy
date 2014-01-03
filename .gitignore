@@ -13,3 +13,4 @@ Profiles
 csx
 rcf
 ServiceConfiguration.Cloud.cscfg
+*.nupkg
