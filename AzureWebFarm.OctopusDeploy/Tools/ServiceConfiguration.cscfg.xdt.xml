@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<x:ServiceConfiguration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
+<x:ServiceConfiguration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="3" xdt:Transform="SetAttributes">
   <x:Role>
     <x:ConfigurationSettings>
       <x:Setting name="OctopusServer" value="http://OCTOPUSSERVERURL/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
