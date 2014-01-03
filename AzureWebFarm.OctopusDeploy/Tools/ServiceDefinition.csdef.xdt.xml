@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <x:ServiceDefinition xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform" xmlns:x="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
   <x:WebRole>
+    <x:Runtime xdt:Transform="InsertIfMissing" />
+    <x:Runtime executionContext="elevated" xdt:Transform="SetAttributes" />
     <x:Startup xdt:Transform="InsertIfMissing" />
     <x:Startup>
       <x:Task commandLine="Startup\startup.cmd" executionContext="elevated" taskType="simple" xdt:Transform="InsertIfMissing" xdt:Locator="Match(commandLine)">
