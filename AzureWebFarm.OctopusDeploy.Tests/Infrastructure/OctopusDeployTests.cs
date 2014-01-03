@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using ApprovalTests;
 using ApprovalTests.Reporters;
@@ -35,6 +36,7 @@ namespace AzureWebFarm.OctopusDeploy.Tests.Infrastructure
 
         [Fact]
         [UseReporter(typeof(DiffReporter))]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void WhenConfiguringTentacle_ThenTheCorrectCommandsShouldBeSentToTentacleExe()
         {
             var b = new StringBuilder();

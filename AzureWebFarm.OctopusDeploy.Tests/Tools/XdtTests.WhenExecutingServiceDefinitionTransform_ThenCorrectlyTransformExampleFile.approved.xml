@@ -1,0 +1,45 @@
+﻿<ServiceDefinition name="WindowsAzure5" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
+  <WebRole name="WebApplication1" vmsize="Small">
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="Endpoint1" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <Endpoints>
+      <InputEndpoint name="Endpoint1" protocol="http" port="80" />
+    </Endpoints>
+    <Imports>
+      <Import moduleName="Diagnostics" />
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
+    <Runtime executionContext="elevated" />
+    <Startup>
+      <Task commandLine="Startup\startup.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="PathToInstall">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Install']/@path" />
+          </Variable>
+          <Variable name="PathToDeployments">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='Deployments']/@path" />
+          </Variable>
+          <Variable name="ComputeEmulatorRunning">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
+    <LocalResources>
+      <LocalStorage name="Install" cleanOnRoleRecycle="false" sizeInMB="1024" />
+      <LocalStorage name="Deployments" cleanOnRoleRecycle="true" sizeInMB="19456" />
+    </LocalResources>
+    <ConfigurationSettings>
+      <Setting name="OctopusServer" />
+      <Setting name="OctopusApiKey" />
+      <Setting name="TentacleEnvironment" />
+      <Setting name="TentacleRole" />
+    </ConfigurationSettings>
+  </WebRole>
+</ServiceDefinition>

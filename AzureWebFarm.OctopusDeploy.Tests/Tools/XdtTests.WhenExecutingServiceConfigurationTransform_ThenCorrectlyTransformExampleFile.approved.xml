@@ -1,0 +1,20 @@
+﻿<ServiceConfiguration serviceName="WindowsAzure5" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="3" osVersion="*" schemaVersion="2013-10.2.2">
+  <Role name="WebApplication1">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=portalvhdsnxm1kq22c7s2h;AccountKey=9CndQ/phRsHeGGZekc4LhBEilIHD1dMIuaScYrUoVFtMsDo5laj3yoSLPxbua7ebb5L7pBct/rktX/UF+UDc8A==" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="webfarmadmin" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEDkO5OmSrouZRmX93GADjMAwDQYJKoZIhvcNAQEBBQAEggEAHFgijEJ2HbG5sc1LX1VJPOso0Jd9e/T2NTXuFzv8tvEqZH3ScmHOh4sC9KHMj01CxCM0tnfL/I4fsj+6AiyPfQld6Z40WGnxQb39o5jl0s74uMOvp6hlLUchRj3DpDPF1XnZ2w4juU7J9a4mq/Gx/Rlk5ASkDOe8twBTAVbi8qmqzg+wFXk7HUq+hl1uaApAS3b079QyE5l/+w6eKgo/jiTV4h7qPorDiSJo76r09/dmgGShMXqsP/nH2FJkhcTeKrD6IfHVslF57sCJZI7nlt/lLEsNSIIp8HJm+wuxY0lYGAgOz7YP4kbDy6sJLl12z92m+s3VBbNk1VkaRa/AuDAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECEecZEBVk7UBgBDezCCgNAnRbmWldg6QSJt8" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2015-01-02T23:59:59.0000000+08:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+      <Setting name="OctopusServer" value="http://robdmooreoct.cloudapp.net/" />
+      <Setting name="OctopusApiKey" value="API-CZYCNXCPAMBWFMDUTPUQUC0O2ZY" />
+      <Setting name="TentacleEnvironment" value="Production" />
+      <Setting name="TentacleRole" value="webserver" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="5BFCF449A37F73EF3875A1682BE5AE5CCB1B553F" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>
