@@ -1,0 +1,2 @@
+git update-index --assume-unchanged AzureWebFarm.OctopusDeploy.Example/ServiceConfiguration.Local.cscfg
+git update-index --assume-unchanged AzureWebFarm.OctopusDeploy.Example/ServiceConfiguration.Cloud.cscfg
