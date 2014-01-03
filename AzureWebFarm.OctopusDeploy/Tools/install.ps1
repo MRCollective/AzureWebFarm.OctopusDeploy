@@ -1,7 +1,7 @@
 ﻿param($installPath, $toolsPath, $package, $project)
-
 $projectPath = Split-Path -Parent $project.FullName
 
+# Function to perform xml transform
 Add-Type -Path ($project.Object.References | Where-Object { $_.Name -eq "Microsoft.Web.XmlTransform" }).Path
 function XmlTransform([string] $file, [string] $transformFile) {
 
@@ -25,36 +25,32 @@ function XmlTransform([string] $file, [string] $transformFile) {
     }
 }
 
+# Find Cloud project
 $ccProj = $project.Object.DTE.Solution.Projects | Where-Object { $_.Kind -eq "{cc5fd16d-436d-48ad-a40c-5a424c6e3e79}" } | Select-Object -First 1
 if ($ccProj -eq $null) {
     throw "Couldn't find an Azure Cloud Project in your solution; please follow the instructions at https://github.com/AzureWebFarm.OctopusDeploy"
 }
 
+# XDT Transform CSDef file
 $csdef = $ccProj.ProjectItems | Where-Object { $_.Name -eq "ServiceDefinition.csdef" }
 if ($csdef -eq $null) {
     throw "Couldn't find a ServiceDefinition.csdef file in Azure Cloud Project $($ccProj.Name); please follow the instructions at https://github.com/AzureWebFarm.OctopusDeploy"
 }
 XmlTransform $csdef.Object.Url (Join-Path $toolsPath "ServiceDefinition.csdef.xdt.xml")
 
-$csdef = $ccProj.ProjectItems |
+# XDT Transform CSCfg files
+$ccProj.ProjectItems |
     Where-Object { $_.Name.EndsWith(".cscfg") } |
     ForEach-Object { XmlTransform $_.Object.Url (Join-Path $toolsPath "ServiceConfiguration.cscfg.xdt.xml") }
 
-$toolAppConfig = Join-Path $toolsPath "App.config"
-Write-Host "Adding $toolAppConfig to $($project.Name) project"
-$projAppConfig = Join-Path $projectPath "App.config"
-if (-not (Test-Path $projAppConfig)) {
-    Copy-Item $toolAppConfig $projAppConfig
-    $project.ProjectItems.AddFromFile($projAppConfig)
-}
-
-Write-Host $toolsPath
+# XDT Transform CCProj file
 $tempFile = [IO.Path]::GetTempFileName()
 $xdt = Get-Content (Join-Path $toolsPath "CloudProject.ccproj.xdt.xml")
 $assemblyName = ($project.Properties | Where-Object { $_.Name -eq "AssemblyName" } | Select-Object -First 1).Value
 $xdt.Replace("%WebProjectName%", $project.Name).Replace("%WebProjectDir%", $projectPath).Replace("%WebAssemblyName%", $assemblyName) | Set-Content $tempFile
 XmlTransform $ccProj.FullName $tempFile
 
+# Set Startup items as copy always
 $startupFolder = $project.ProjectItems |
     Where-Object { $_.Name -eq "Startup" } |
     Select-Object -First 1
@@ -63,3 +59,20 @@ $startupFolder.ProjectItems |
         Write-Host "Setting Startup\$($_.Name) as Copy always"
         $_.Properties.Item("CopyToOutputDirectory").Value = [int]1
     }
+
+# Add binding redirects for web.config
+Write-Host "Adding binding redirects to update Web.config"
+Add-BindingRedirect
+
+# Add App.config file with binding redirects
+Write-Host "Creating an App.config file for use by the RoleEntryPoint with the binding redirects in Web.config"
+$webConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" } | Select-Object -First 1
+$webConfigPath = ($webConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
+$webConfig = [xml] (Get-Content $webConfigPath)
+$runtimeNode = $webConfig.configuration.runtime
+$appConfig = [xml]"<?xml version=`"1.0`"?><configuration />"
+$newRuntimeNode = $appConfig.ImportNode($runtimeNode, $true)
+$appConfig.DocumentElement.AppendChild($newRuntimeNode)
+$appConfigPath = Join-Path $projectPath "App.config"
+$appConfig.Save($appConfigPath)
+$project.ProjectItems.AddFromFile($appConfigPath)

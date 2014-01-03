@@ -48,7 +48,6 @@
   <files>
     <file src="readme.txt" />
     <file src="..\ExampleWebFarm\Startup\*.*" target="content\Startup" />
-    <file src="..\ExampleWebFarm\App.config" target="tools" />
     <file src="..\ExampleWebFarm\WebRole.cs" target="content" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.dll" target="lib\NET45" />
     <file src="bin\Release\AzureWebFarm.OctopusDeploy.pdb" target="lib\NET45" />
