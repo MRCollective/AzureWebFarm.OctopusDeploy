@@ -8,31 +8,139 @@ Logo courtesy of Aoife Doyle (thanks so much - it's awesome!)
 
 tl;dr
 -----
+* Pre-requisites
 * Installation Instructions
+* Local Debugging
+* Remote Debugging
 * What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?
+* What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?
+* What if I want to deploy non-.NET applications?
 * Why is this needed?
     * If you are using OctopusDeploy for deployments and you want to move to the cloud
     * If you are deploying web applications to Windows Azure
 * Contributing
 * Stay abreast of the latest changes / releases
 
+Pre-requisites
+--------------
+
+* An [OctopusDeploy server](http://docs.octopusdeploy.com/display/OD/Getting+started) using at least version 2.0.8 that is [already configured with the environments, projects, users etc.](); you will need to record the:
+    * `OctopusServer` - Octopus Server URL
+    * `OctopusApiKey` - [API key of a user](https://github.com/OctopusDeploy/OctopusDeploy-Api/wiki/Authentication) that has at least the following privileges in the environment you are deploying to: ("Environment manager" and "Project deployer") or ("System administrator")
+    * `TentacleEnvironment` - Name of the environment that you want to deploy to
+    * `TentacleRole` - Name of the role you want your web farm servers to have
+* A [Windows Azure Cloud Service](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#quick) to host the web farm that has a [certificate uploaded to it](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#uploadcertificate) for RDP (and your HTTPS certificate if you are going to configure HTTPS)
+* If you are creating a custom install (see below) then you need to have [.NET Framework 4.5 and Windows Azure Tools 2.2](http://www.microsoft.com/web/downloads/platform.aspx) installed along with Visual Studio 2012 or above
+
 Installation Instructions
 -------------------------
 
-You have two options for using AzureWebFarm.OctopusDeploy
+You have two options for using AzureWebFarm.OctopusDeploy:
 
 1. You can use one of our pre-packaged cloud packages to avoid the need to crack open Visual Studio - this is really easy, but limits you to the standard configurations we have built
 2. You can install the project into a cloud project using NuGet and retain full control over how your cloud service is configured (and have the flexibility to have a non-standard configuration)
+
+### Pre-packaged deployment
+Coming soon!
+
+### Custom install
+
+Feel free to watch the [screencast tutorial of these instructions](http://youtu.be/2-tdTMt4dfE).
+
+The installation instructions form two parts - normal web role installation and AzureWebFarm.OctopusDeploy installation.
+
+**Creating a Web Role**
+
+1. Start a new Visual Studio solution by creating a new Windows Azure Cloud Service project - be sure to select .Net Framework 4.5 and Windows Azure Tools v2.2 when creating it
+    * **Don't add a web or worker role at this point - just create the blank cloud project**
+    * This will henceforth be referred to as the "cloud project"
+2. Add a new "ASP.NET Empty Web Application" project to your solution - ensure it's .NET Framework 4.5
+    * This will henceforth be referred to as the "web project"
+3. Right-click "Roles" on the cloud project, select "Add" > "Web Role Project in solution" and select the newly added web project
+4. Configure RDP by right-clicking the cloud project and select "Package", tick the "Enable Remote Desktop for all roles" checkbox, select a certificate that you have uploaded to your Windows Azure cloud service and specify a username/password/expiry
+5. Configure the number of instances that you want to initially deploy by changing this element in `ServiceConfiguration.Cloud.cscfg`: `<Instances count="1" />` - [use at least 2 instances to meet the 99.95% SLA](https://www.windowsazure.com/en-us/support/legal/sla/)
+6. Add in a diagnostics connection string to the `ServiceConfiguration.Cloud.cscfg` file by changing this element: `<Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="AccountName={ACCOUNTNAME};AccountKey={ACCOUNTKEY};DefaultEndpointsProtocol=https" />` - make sure there is NOT a trailing `;` or it will fail when you deploy
+7. Select and enter your vmsize into the `vmsize` attribute of the `WebRole` element in the `ServiceDefinition.csdef` file - I generally recommend (see the screencast for more informaton and explaination):
+    * `ExtraSmall` for test/dev farms (unless your application(s) chews up all the memory)
+    * `Small` for small to medium load websites
+    * `Medium` for medium to high load websites
+8. Consider adding a HTTP endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)
+9. Deploy your cloud package to Azure to make sure everything is configured correctly - your instances should reach the "Running" state - you can use:
+    * [Visual Studio](http://msdn.microsoft.com/en-us/library/windowsazure/hh535756.aspx)
+    * [The Windows Azure portal](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#deploy)
+    * [A PowerShell script](http://www.windowsazure.com/en-us/develop/net/common-tasks/continuous-delivery/#step4) e.g. from a CI server
+
+**Adding AzureWebFarm.OctopusDeploy to your Web Role**
+
+1. Execute the following in the Package Manager Console (or use the GUI): `Install-Package AzureWebFarm.OctopusDeploy`
+    * Make sure it installs into the web project
+    * When prompted that a file has been modified click **"Reload"**
+2. (optional) [Debug locally](#Local_Debugging)
+3. Ensure that the `ServiceConfiguration.Cloud.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
+4. Deploy to Azure as per step 9 above
+
+Local Debugging
+---------------
+It is a good idea to debug the farm locally to make sure your configuration is correct and your OctopusDeploy server is configured correctly:
+
+1. Ensure that there is only one instance locally by checking the `ServiceConfiguration.Local.cscfg` file has `<Instances count="1" />`
+2. Ensure that the `ServiceConfiguration.Local.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
+3. Set the cloud project as the default project
+4. (optional) If you have already downloaded the tentacle installer and don't want to wait for the emulator to download it as part of startup then place the file at `c:\Octopus.Tentacle.msi` and it will automatically be used
+5. Hit F5 to start the Azure emulator
+6. If all goes well you should see your computer registered with your Octopus server and any current releases deployed to your local IIS server
+    * If you need to debug the startup script then uncomment the relevant REM'd out lines in Startup\startup.cmd (but remember to recomment them before dpeloying to Azure or your Azure deployment WILL fail
+    * If you need to debug the RoleEntryPoint code then [set up your Visual Studio to debug using Symbol Source](http://www.symbolsource.org/Public/Home/VisualStudio) and you should be able to step into the AzureWebFarm.OctopusDeploy code
+
+Remote Debugging
+----------------
+
+The following should be able to help you debug what is happening:
+
+* RDP into the server:
+    * Look at Event Viewer for application exceptions
+    * Look at C:\Resources\Temp\RoleTemp\{GUID}\StartupLog.txt to see the output of `Startup\startup.cmd`
+* Look at the `LogEntity` table in table storage of the storage account you configured for Diagnostics to see the log output of the RoleEntryPoint
 
 What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?
 --------------------------------------------------------------------------------------------------------
 
 Check out our [AzureWebFarm](https://github.com/MRCollective/AzureWebFarm) project, which is a similar concept except the farm contains everything you need to deploy within it - you simply MsDeploy your application to it and it will sync the new code across the whole farm for you.
 
+What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?
+-------------------------------------------------------------------------
+Apart from adding the dependencies of the package and the dll the following actions are performed:
+
+* To your web project:
+    * `Startup\startup.cmd` is added and set as "Copy always"
+    * `Startup\startup.ps1` is added and set as "Copy always"
+    * `WebRole.cs` is added
+    * Binding redirects are added to the `Web.config` file
+    * The binding redirects in the `Web.config` file are copied into a new `App.config` file that is used by the RoleEntryPoint code (since it doesn't run under IIS it can't use `Web.config`)
+* To your cloud project:
+    * The `{CloudProject}.ccproj` file is modified to add an MSBuild target that copies the `App.config` file from the web project to `bin\{WebProject}.dll.config` in the cloud package when it's built
+    * The `ServiceDefinition.csdef` file is changed to add:
+        * Elevated privileges for the RoleEntryPoint code
+        * Startup\startup.cmd as an elevated privileges startup task that has selected environment variables
+        * A 1GB `Install` local resource directory (where the tentacle is installed) and a 19GB `Deployments` local resource directory (where deployments are stored) - if you aren't using ExtraSmall instances then you can increase the 19GB to a larger value
+        * Four configuration settings variables are added: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
+    * All `ServiceConfiguration.*.cscfg` files are changed to add the four configuration settings variables: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
+
+To see how we perform all of this "magic" checkout the [install.ps1](https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/AzureWebFarm.OctopusDeploy/Tools/install.ps1) file.
+
+What if I want to deploy non-.NET applications?
+-----------------------------------------------
+
+While .NET projects will work out of the box, IIS has the capability of running almost any programming language that you want - Python, PHP, Java, NodeJS, etc. If you are using a custom install of AzureWebFarm.OctopusDeploy then you have full flexibility to add extra startup tasks to configure IIS to enable these different languages. You can then add NuGet packages to OctopusDeploy to be deployed that don't contain a .NET application.
+
 Why is this needed?
 -------------------
 
 ### If you are using OctopusDeploy for deployments and you want to move to the cloud
+
+If you are using OctopusDeploy for your deployments and you want to migrate your application to the cloud then this project provides you a really easy pathway to continue using OctopusDeploy for your deployments, while having the hard work of setting up the infrastructure done for you.
+
+At the same time you benefit from the infinite scalability of Azure Web Roles (see next section for more information) and the App Initialisation Module configuration that we have enabled to improve startup performance of your applications.
 
 ### If you are deploying web applications to Windows Azure
 
