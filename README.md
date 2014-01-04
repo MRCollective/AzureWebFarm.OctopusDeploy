@@ -3,7 +3,7 @@ AzureWebFarm.OctopusDeploy
 
 This project allows you to easily create an [infinitely-scalable farm of IIS 8 / Windows Server 2012 web servers using Windows Azure Web Roles](http://www.windowsazure.com/en-us/services/cloud-services/) that are deployed to by an [OctopusDeploy](http://octopusdeploy.com/) server.
 
-![https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png](AzureWebFarm.OctopusDeploy logo)
+![AzureWebFarm.OctopusDeploy logo](https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png)
 
 todo: jump links
 
