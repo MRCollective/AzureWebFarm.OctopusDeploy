@@ -23,7 +23,7 @@
       https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png
     </iconUrl>
     <releaseNotes>
-      Please see https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/BREAKING_CHANGES.md for any breaking changes.
+      Please see https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/releases for release notes and https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/BREAKING_CHANGES.md for any breaking changes.
     </releaseNotes>
     <tags>
       azure iis web-farm octopusdeploy web-role scalable
