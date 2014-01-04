@@ -60,19 +60,21 @@ $startupFolder.ProjectItems |
         $_.Properties.Item("CopyToOutputDirectory").Value = [int]1
     }
 
-# Add binding redirects for web.config
-Write-Host "Adding binding redirects to update Web.config"
-Add-BindingRedirect
-
 # Add App.config file with binding redirects
-Write-Host "Creating an App.config file for use by the RoleEntryPoint with the binding redirects in Web.config"
-$webConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" } | Select-Object -First 1
-$webConfigPath = ($webConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
-$webConfig = [xml] (Get-Content $webConfigPath)
-$runtimeNode = $webConfig.configuration.runtime
-$appConfig = [xml]"<?xml version=`"1.0`"?><configuration />"
-$newRuntimeNode = $appConfig.ImportNode($runtimeNode, $true)
-$appConfig.DocumentElement.AppendChild($newRuntimeNode)
-$appConfigPath = Join-Path $projectPath "App.config"
-$appConfig.Save($appConfigPath)
-$project.ProjectItems.AddFromFile($appConfigPath)
+$appConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "App.config" } | Select-Object -First 1
+if ($appConfigProjectItem -eq $null) {
+    Write-Host "Adding binding redirects to update Web.config"
+    Add-BindingRedirect
+
+    Write-Host "Creating an App.config file for use by the RoleEntryPoint with the binding redirects in Web.config"
+    $webConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" } | Select-Object -First 1
+    $webConfigPath = ($webConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
+    $webConfig = [xml] (Get-Content $webConfigPath)
+    $runtimeNode = $webConfig.configuration.runtime
+    $appConfig = [xml]"<?xml version=`"1.0`"?><configuration />"
+    $newRuntimeNode = $appConfig.ImportNode($runtimeNode, $true)
+    $appConfig.DocumentElement.AppendChild($newRuntimeNode)
+    $appConfigPath = Join-Path $projectPath "App.config"
+    $appConfig.Save($appConfigPath)
+    $project.ProjectItems.AddFromFile($appConfigPath)
+}
