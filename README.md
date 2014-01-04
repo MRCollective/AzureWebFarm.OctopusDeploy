@@ -6,20 +6,29 @@ This project allows you to easily create an [infinitely-scalable farm of IIS 8 /
 ![AzureWebFarm.OctopusDeploy logo](https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png)
 Logo courtesy of Aoife Doyle (thanks so much - it's awesome!)
 
+It's really easy to get up and running - more details below, but in short:
+
+1. Configure a standard Web Role project in Visual Studio
+2. `Install-Package AzureWebFarm.OctopusDeploy`
+3. Configure 4 cloud service variables - `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
+4. Deploy to Azure and watch the magic happen!
+
 tl;dr
 -----
-* Pre-requisites
-* Installation Instructions
-* Local Debugging
-* Remote Debugging
-* What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?
-* What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?
-* What if I want to deploy non-.NET applications?
-* Why is this needed?
-    * If you are using OctopusDeploy for deployments and you want to move to the cloud
-    * If you are deploying web applications to Windows Azure
-* Contributing
-* Stay abreast of the latest changes / releases
+* [Pre-requisites](#pre-requisites)
+* [Installation Instructions](#installation-instructions)
+    * [Pre-packaged deployment](#pre-packaged-deployment)
+    * [Custom install](#custom-install)
+* [Local debugging](#local-debugging)
+* [Remote debugging](#remote-debugging)
+* [What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?](#what-if-i-want-to-use-web-roles-but-dont-want-to-pay-for-another-vm--dont-want-to-use-octopusdeploy)
+* [What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?](#what-happens-when-i-install-the-azurewebfarmoctopusdeploy-nuget-package)
+* [What if I want to deploy non-.NET applications?](#what-if-i-want-to-deploy-non-net-applications)
+* [Why is this needed?](#why-is-this-needed)
+    * [If you are using OctopusDeploy for deployments and you want to move to the cloud](##if-you-are-using-octopusdeploy-for-deployments-and-you-want-to-move-to-the-cloud)
+    * [If you are deploying web applications to Windows Azure](#if-you-are-deploying-web-applications-to-windows-azure)
+* [Contributing](#contributing)
+* [Stay abreast of the latest changes / releases](#stay-abreast-of-the-latest-changes--releases)
 
 Pre-requisites
 --------------
@@ -75,11 +84,11 @@ The installation instructions form two parts - normal web role installation and 
 1. Execute the following in the Package Manager Console (or use the GUI): `Install-Package AzureWebFarm.OctopusDeploy`
     * Make sure it installs into the web project
     * When prompted that a file has been modified click **"Reload"**
-2. (optional) [Debug locally](#Local_Debugging)
+2. (optional) [Debug locally](#local-debugging)
 3. Ensure that the `ServiceConfiguration.Cloud.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
 4. Deploy to Azure as per step 9 above
 
-Local Debugging
+Local debugging
 ---------------
 It is a good idea to debug the farm locally to make sure your configuration is correct and your OctopusDeploy server is configured correctly:
 
@@ -92,7 +101,7 @@ It is a good idea to debug the farm locally to make sure your configuration is c
     * If you need to debug the startup script then uncomment the relevant REM'd out lines in Startup\startup.cmd (but remember to recomment them before dpeloying to Azure or your Azure deployment WILL fail
     * If you need to debug the RoleEntryPoint code then [set up your Visual Studio to debug using Symbol Source](http://www.symbolsource.org/Public/Home/VisualStudio) and you should be able to step into the AzureWebFarm.OctopusDeploy code
 
-Remote Debugging
+Remote debugging
 ----------------
 
 The following should be able to help you debug what is happening:
