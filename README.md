@@ -50,15 +50,15 @@ If for one of the reasons above or perhaps one of the [other possible reasons](h
 
 It must be said that Web Roles aren't perfect; there are three main disadvantages that we see with Web Roles:
 
-1 The out-of-the-box deployment experience leaves a lot to be desired - it's slow and error-prone
+1. The out-of-the-box deployment experience leaves a lot to be desired - it's slow and error-prone
     * To clarify: What is happening is *amazing* - within 8-15 minutes a number of customised Virtual Machines are being provisioned for you on a static IP address and those machines can be scaled up or down at any time and they have full health monitoring and diagnostics capabilities built-in!
     * The problem lies when you tie that deployment process to the deployment of a software application (like most of the Web Roles tutorials you will read suggest you do) - waiting 8-15 minutes for a VM to be provisioned is amazing, waiting 8-15 minutes for the latest version of your software application to be deployed is unacceptably slow
     * The way we see it - you should treat a Web Role as infrastructure rather than an application and you should deploy your applications to a farm of Web Roles that have been previously set up
     * This leads us to the second disadvantage of Web Roles...
-2 If you change state in a role dynamically (e.g. change IIS settings, install a program, deploy some files to IIS, etc.) then as soon as the role is restarted/recycled (e.g. a Windows Update is applied or you change a configuration setting that requires a recycle) you lose that state
+2. If you change state in a role dynamically (e.g. change IIS settings, install a program, deploy some files to IIS, etc.) then as soon as the role is restarted/recycled (e.g. a Windows Update is applied or you change a configuration setting that requires a recycle) you lose that state
     * It should be noted that this is also the main advantage of Web Roles in that it's what allows them to be so scalable - each role is treated homogenously with the others and so can be shutdown and spun up as needed - it just requires you to specify everything that is needed for that role in the package (.cspkg) file for the operation and lifetime of that role
     * The fact that you can run arbitrary code at startup and shutdown of the role means that you can do *anything you want* though; you just need to work within the bounds of the platform (it is afterall PaaS, not IaaS) - that's what we've taken advantage of to enable this project to be possible
-3 Tying your application code to your Web Role increases your solution complexity (you have another project in there and your deployment is more complex because rather than packaging/deploying the site you are deploying the site inside of a Web Role package) and can lead to developers tying the application to the Web Roles development model even though they should be agnostic of that (and leave you with flexibility to deploy them anywhere)
+3. Tying your application code to your Web Role increases your solution complexity (you have another project in there and your deployment is more complex because rather than packaging/deploying the site you are deploying the site inside of a Web Role package) and can lead to developers tying the application to the Web Roles development model even though they should be agnostic of that (and leave you with flexibility to deploy them anywhere)
 
 **How does AzureWebFarm.OctopusDeploy allow me to use Web Roles without any of the disadvantages?**
 
