@@ -25,7 +25,7 @@ tl;dr
 * [What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?](#what-happens-when-i-install-the-azurewebfarmoctopusdeploy-nuget-package)
 * [What if I want to deploy non-.NET applications?](#what-if-i-want-to-deploy-non-net-applications)
 * [Why is this needed?](#why-is-this-needed)
-    * [If you are using OctopusDeploy for deployments and you want to move to the cloud](##if-you-are-using-octopusdeploy-for-deployments-and-you-want-to-move-to-the-cloud)
+    * [If you are using OctopusDeploy for deployments and you want to move to the cloud](#if-you-are-using-octopusdeploy-for-deployments-and-you-want-to-move-to-the-cloud)
     * [If you are deploying web applications to Windows Azure](#if-you-are-deploying-web-applications-to-windows-azure)
 * [Contributing](#contributing)
 * [Stay abreast of the latest changes / releases](#stay-abreast-of-the-latest-changes--releases)
