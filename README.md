@@ -74,7 +74,7 @@ The installation instructions form two parts - normal web role installation and 
     * `Small` for small to medium load websites
     * `Medium` for medium to high load websites
 8. Consider adding a HTTPS web role endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)
-9. Deploy your cloud package to Azure to make sure everything is configured correctly - your instances should reach the "Running" state - you can use:
+9. If you want to do a test deployment at this stage to make sure everything is configured correctly first check that `osFamily` is set to `3` in `ServiceConfiguration.Cloud.cscfg` - we check this setting automatically later, but you'll need to check it yourself to successfully deploy at this stage. Deploy your cloud package to Azure - your instances should reach the "Running" state. To publish your package you can use:
     * [Visual Studio](http://msdn.microsoft.com/en-us/library/windowsazure/hh535756.aspx)
     * [The Windows Azure portal](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#deploy)
     * [A PowerShell script](http://www.windowsazure.com/en-us/develop/net/common-tasks/continuous-delivery/#step4) e.g. from a CI server
