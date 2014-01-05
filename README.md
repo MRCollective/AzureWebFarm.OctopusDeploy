@@ -40,6 +40,7 @@ Pre-requisites
     * `TentacleRole` - Name of the role you want your web farm servers to have
 * A [Windows Azure Cloud Service](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#quick) to host the web farm that has a [certificate uploaded to it](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#uploadcertificate) for RDP (and your HTTPS certificate if you are going to configure HTTPS)
 * If you are creating a custom install (see below) then you need to have [.NET Framework 4.5 and Windows Azure Tools 2.2](http://www.microsoft.com/web/downloads/platform.aspx) installed along with Visual Studio 2012 or above
+* The latest version of NuGet - at least >= 2.7.2, as there is a [bug in some earlier versions](http://docs.nuget.org/docs/release-notes/nuget-2.7.2) which can cause NuGet to miss adding a binding redirect for WindowsAzure.Storage.
 
 Installation Instructions
 -------------------------
@@ -74,7 +75,7 @@ The installation instructions form two parts - normal web role installation and 
     * `Small` for small to medium load websites
     * `Medium` for medium to high load websites
 8. Consider adding a HTTPS web role endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)
-9. If you want to do a test deployment at this stage to make sure everything is configured correctly first check that `osFamily` is set to `3` in `ServiceConfiguration.Cloud.cscfg` - we check this setting automatically later, but you'll need to check it yourself to successfully deploy at this stage. Deploy your cloud package to Azure - your instances should reach the "Running" state. To publish your package you can use:
+9. If you want to do a test deployment at this stage to make sure everything is configured correctly first check that `osFamily` is set to `3` in `ServiceConfiguration.Cloud.cscfg` - we check this setting automatically later, but you'll need to check it yourself to successfully deploy at this stage. You may also want to check your `Web.config` and `App.config` files to make sure there is a binding redirect there for `WindowsAzure.Storage`. Deploy your cloud package to Azure - your instances should reach the "Running" state. To publish your package you can use:
     * [Visual Studio](http://msdn.microsoft.com/en-us/library/windowsazure/hh535756.aspx)
     * [The Windows Azure portal](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#deploy)
     * [A PowerShell script](http://www.windowsazure.com/en-us/develop/net/common-tasks/continuous-delivery/#step4) e.g. from a CI server
