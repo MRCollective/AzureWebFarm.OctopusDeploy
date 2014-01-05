@@ -63,32 +63,14 @@ $startupFolder.ProjectItems |
 # Add App.config file with binding redirects
 $appConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "App.config" } | Select-Object -First 1
 if ($appConfigProjectItem -eq $null) {
-    Write-Host "Opening Web.config to update binding redirects"
-    $webConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" } | Select-Object -First 1
-    $webConfigPath = ($webConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
-    $webConfig = [xml] (Get-Content $webConfigPath)
-    $runtimeNode = $webConfig.configuration.runtime
-
-    Write-Host "Adding an explicit binding redirect for WindowsAzure.Storage"
-    $packagesConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "packages.config" } | Select-Object -First 1
-    $packagesConfigPath = ($packagesConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
-    $packagesConfig = [xml] (Get-Content $packagesConfigPath)
-    $azureStorageConfig = $packagesConfig.SelectNodes('/packages/package[@id="WindowsAzure.Storage"]') | Select-Object -First 1
-    $azureStorageVersion = $azureStorageConfig.version
-    $bindingRedirectXml = [xml]('<dependentAssembly>' +
-        '<assemblyIdentity name="Microsoft.WindowsAzure.Storage" publicKeyToken="31bf3856ad364e35" culture="neutral" />' +
-        '<bindingRedirect oldVersion="0.0.0.0-' + $azureStorageVersion + '" newVersion="' + $azureStorageVersion + '" />' +
-      '</dependentAssembly>');
-    $bindingRedirect = $bindingRedirectXml.SelectNodes('/dependentAssembly') | Select-Object -First 1
-    $bindingRedirectNode = $webConfig.ImportNode($bindingRedirect, $true)
-    $runtimeNode.assemblyBinding.AppendChild($bindingRedirectNode)
-    $webConfig = [xml] ($webconfig.OuterXml.Replace(' xmlns=""', ''))
-    $webConfig.Save($webConfigPath)
-
     Write-Host "Adding binding redirects to update Web.config"
     Add-BindingRedirect
 
     Write-Host "Creating an App.config file for use by the RoleEntryPoint with the binding redirects in Web.config"
+    $webConfigProjectItem = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" } | Select-Object -First 1
+    $webConfigPath = ($webConfigProjectItem.Properties | Where-Object { $_.Name -eq "LocalPath" } | Select-Object -First 1).Value
+    $webConfig = [xml] (Get-Content $webConfigPath)
+    $runtimeNode = $webConfig.configuration.runtime
     $appConfig = [xml]"<?xml version=`"1.0`"?><configuration />"
     $newRuntimeNode = $appConfig.ImportNode($runtimeNode, $true)
     $appConfig.DocumentElement.AppendChild($newRuntimeNode)
