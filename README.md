@@ -73,7 +73,7 @@ The installation instructions form two parts - normal web role installation and 
     * `ExtraSmall` for test/dev farms (unless your application(s) chews up all the memory)
     * `Small` for small to medium load websites
     * `Medium` for medium to high load websites
-8. Consider adding a HTTP endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)
+8. Consider adding a HTTPS web role endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)
 9. Deploy your cloud package to Azure to make sure everything is configured correctly - your instances should reach the "Running" state - you can use:
     * [Visual Studio](http://msdn.microsoft.com/en-us/library/windowsazure/hh535756.aspx)
     * [The Windows Azure portal](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#deploy)
