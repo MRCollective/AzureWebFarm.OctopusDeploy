@@ -84,6 +84,7 @@ The installation instructions form two parts - normal web role installation and 
 1. Execute the following in the Package Manager Console (or use the GUI): `Install-Package AzureWebFarm.OctopusDeploy`
     * Make sure it installs into the web project
     * When prompted that a file has been modified click **"Reload"**
+    * If prompted that a file already exists ie `WebRole.cs`, you should allow NuGet to override it with the file from our package
 2. (optional) [Debug locally](#local-debugging)
 3. Ensure that the `ServiceConfiguration.Cloud.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
 4. Deploy to Azure as per step 9 above
