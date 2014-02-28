@@ -32,7 +32,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             var tentacleDeploymentsPath = _config.TentacleDeploymentsPath;
             var tentacleInstallPath = _config.TentacleInstallPath;
             var tentacleDir = Path.Combine(tentacleInstallPath, "Tentacle");
-            var tentaclePath = Path.Combine(Path.Combine(tentacleDir, "Agent"), "Tentacle.exe");
+            var tentaclePath = Path.Combine(tentacleDir, "Tentacle.exe");
 
             _processRunner.Run(tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", instanceArg, Path.Combine(tentacleInstallPath, "Tentacle.config")));
             _processRunner.Run(tentaclePath, string.Format("new-certificate {0} --console", instanceArg));
