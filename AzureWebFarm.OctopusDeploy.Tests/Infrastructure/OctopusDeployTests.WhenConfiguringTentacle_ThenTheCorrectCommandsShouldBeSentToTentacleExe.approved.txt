@@ -1,4 +1,4 @@
-﻿c:\Install\Tentacle\Agent\Tentacle.exe create-instance --instance "Tentacle" --config "c:\Install\Tentacle.config" --console
+c:\Install\Tentacle\Agent\Tentacle.exe create-instance --instance "Tentacle" --config "c:\Install\Tentacle.config" --console
 c:\Install\Tentacle\Agent\Tentacle.exe new-certificate --instance "Tentacle" --console
 c:\Install\Tentacle\Agent\Tentacle.exe configure --instance "Tentacle" --home "c:\Deployment" --console
 c:\Install\Tentacle\Agent\Tentacle.exe configure --instance "Tentacle" --app "c:\Deployments\Applications" --console
