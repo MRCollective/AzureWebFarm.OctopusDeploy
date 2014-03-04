@@ -51,7 +51,7 @@ You have two options for using AzureWebFarm.OctopusDeploy:
 2. You can install the project into a cloud project using NuGet and retain full control over how your cloud service is configured (and have the flexibility to have a non-standard configuration)
 
 ### Pre-packaged deployment
-Coming soon!
+If this is something you would use (download a pre-packaged set of .cspkg and .cscfg files to upload directly to the portal rather than having your own codebase that pulls in our NuGet package) let us know so we know it's a good idea to invest time in this idea! Communicate with us via Twitter [@robdmoore](http://twitter.com/robdmoore) / [@mdaviesnet](http://twitter.com/mdaviesnet) or alternatively create an issue on this GitHub project.
 
 ### Custom install
 
