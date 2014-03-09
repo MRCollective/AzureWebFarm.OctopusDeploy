@@ -1,6 +1,6 @@
-﻿c:\Install\Tentacle\Agent\Tentacle.exe create-instance --instance "Tentacle" --config "c:\Install\Tentacle.config" --console
-c:\Install\Tentacle\Agent\Tentacle.exe new-certificate --instance "Tentacle" --console
-c:\Install\Tentacle\Agent\Tentacle.exe configure --instance "Tentacle" --home "c:\Deployment" --console
-c:\Install\Tentacle\Agent\Tentacle.exe configure --instance "Tentacle" --app "c:\Deployments\Applications" --console
-c:\Install\Tentacle\Agent\Tentacle.exe register-with --instance "Tentacle" --server "%OctopusServer%" --environment "%TentacleEnvironment%" --role "%TentacleRole%" --apiKey "%OctopusApiKey%" --name "%machineName%" --comms-style TentacleActive --force --console
-c:\Install\Tentacle\Agent\Tentacle.exe service --instance "Tentacle" --install --start --console
+﻿c:\Install\Tentacle\Tentacle.exe create-instance --instance "Tentacle" --config "c:\Install\Tentacle.config" --console
+c:\Install\Tentacle\Tentacle.exe new-certificate --instance "Tentacle" --console
+c:\Install\Tentacle\Tentacle.exe configure --instance "Tentacle" --home "c:\Deployment" --console
+c:\Install\Tentacle\Tentacle.exe configure --instance "Tentacle" --app "c:\Deployments\Applications" --console
+c:\Install\Tentacle\Tentacle.exe register-with --instance "Tentacle" --server "%OctopusServer%" --environment "%TentacleEnvironment%" --role "%TentacleRole%" --apiKey "%OctopusApiKey%" --name "%machineName%" --comms-style TentacleActive --force --console
+c:\Install\Tentacle\Tentacle.exe service --instance "Tentacle" --install --start --console
