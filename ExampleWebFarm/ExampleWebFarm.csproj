@@ -69,13 +69,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Client, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.8.977\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Platform, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Platform, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.8.977\lib\net40\Octopus.Platform.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
