@@ -69,25 +69,25 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Client, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.8.977\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Platform, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Platform, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.8.977\lib\net40\Octopus.Platform.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Serilog.1.2.4\lib\net45\Serilog.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.2.25\lib\net45\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.FullNetFx, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Serilog.1.2.4\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.2.25\lib\net45\Serilog.FullNetFx.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog.Sinks.AzureTableStorage, Version=0.9.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+    <Reference Include="Serilog.Sinks.AzureTableStorage, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Serilog.Sinks.AzureTableStorage.0.9.9\lib\net45\Serilog.Sinks.AzureTableStorage.dll</HintPath>
+      <HintPath>..\packages\Serilog.Sinks.AzureTableStorage.1.2.25\lib\net45\Serilog.Sinks.AzureTableStorage.dll</HintPath>
     </Reference>
     <Reference Include="Sprache, Version=1.10.0.35, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
