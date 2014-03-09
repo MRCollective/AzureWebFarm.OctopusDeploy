@@ -2,7 +2,7 @@
 
 try
 {
-    $TentacleDownloadPath = "http://download.octopusdeploy.com/octopus/Octopus.Tentacle.2.0.8.977.msi"
+    $TentacleDownloadPath = "http://download.octopusdeploy.com/octopus/Octopus.Tentacle.2.1.3.1223-x64.msi"
     $TentacleLocalDebuggingPath = "C:\Octopus.Tentacle.msi"
     $PathToInstall = $env:PathToInstall
     $PathToDeployments = $env:PathToDeployments
