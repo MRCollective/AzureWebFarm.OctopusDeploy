@@ -33,11 +33,15 @@ tl;dr
 Pre-requisites
 --------------
 
-* An [OctopusDeploy server](http://docs.octopusdeploy.com/display/OD/Getting+started) using at least version 2.0.8 that is [already configured with the environments, projects, users etc.](); you will need to record the:
+* An [OctopusDeploy server](http://docs.octopusdeploy.com/display/OD/Getting+started) using at least version 2.1 that is already configured with the [environments](http://docs.octopusdeploy.com/display/OD/Environments), [projects](http://docs.octopusdeploy.com/display/OD/Projects), [users](http://docs.octopusdeploy.com/display/OD/Managing+users+and+teams) etc.; you will need to record the:
     * `OctopusServer` - Octopus Server URL
     * `OctopusApiKey` - [API key of a user](https://github.com/OctopusDeploy/OctopusDeploy-Api/wiki/Authentication) that has at least the following privileges in the environment you are deploying to: ("Environment manager" and "Project deployer") or ("System administrator")
     * `TentacleEnvironment` - Name of the environment that you want to deploy to
     * `TentacleRole` - Name of the role you want your web farm servers to have
+* Ensure that if you are using HTTPS (and you should be) for your OctopusDeploy server that the HTTPS certificate is [valid or you include code to trust the invalid certificate](https://github.com/OctopusDeploy/Issues/issues/742)
+* You will need to set up the website and app pool creation for your OctopusDeploy project (including the hostname for your site in the binding(s)) when using this library (since IIS starts off as a blank slate).
+    * You can create a CName alias from your domain name to the `<mywebrolename>.cloudapp.net` address
+    * If you want a naked domain then use a DNS provider that allows you to create ALIAS records or use a service like [dnsazure.com](http://dnsazure.com/)
 * A [Windows Azure Cloud Service](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#quick) to host the web farm that has a [certificate uploaded to it](http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#uploadcertificate) for RDP (and your HTTPS certificate if you are going to configure HTTPS)
 * If you are creating a custom install (see below) then you need to have [.NET Framework 4.5 and Windows Azure Tools 2.2](http://www.microsoft.com/web/downloads/platform.aspx) installed along with Visual Studio 2012 or above
 * The latest version of NuGet - at least >= 2.7.2, as there is a [bug in some earlier versions](http://docs.nuget.org/docs/release-notes/nuget-2.7.2) which can cause NuGet to miss adding a binding redirect for WindowsAzure.Storage.
