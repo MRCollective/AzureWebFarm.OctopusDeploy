@@ -38,6 +38,7 @@ Pre-requisites
     * `OctopusApiKey` - [API key of a user](https://github.com/OctopusDeploy/OctopusDeploy-Api/wiki/Authentication) that has at least the following privileges in the environment you are deploying to: ("Environment manager" and "Project deployer") or ("System administrator")
     * `TentacleEnvironment` - Name of the environment that you want to deploy to
     * `TentacleRole` - Name of the role you want your web farm servers to have
+* Ensure that you open port 10943 on the Octopus Server so that Polling Tentacles can work, for more information view the documentation (http://docs.octopusdeploy.com/display/OD/Polling+Tentacles).
 * Ensure that if you are using HTTPS (and you should be) for your OctopusDeploy server that the HTTPS certificate is [valid or you include code to trust the invalid certificate](https://github.com/OctopusDeploy/Issues/issues/742)
 * You will need to [set up the website and app pool creation for your OctopusDeploy project](http://docs.octopusdeploy.com/display/OD/IIS+Websites+and+Application+Pools) (including the hostname for your site in the binding(s)) when using this library (since IIS starts off as a blank slate).
     * You can create a CName alias from your domain name to the `<mywebrolename>.cloudapp.net` address
