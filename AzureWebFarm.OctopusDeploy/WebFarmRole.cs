@@ -74,6 +74,7 @@ namespace AzureWebFarm.OctopusDeploy
         /// </summary>
         public void OnStop()
         {
+            _octopusDeploy.UninstallTentacle();
             _octopusDeploy.DeleteMachine();
             IisEnvironment.WaitForAllHttpRequestsToEnd();
         }

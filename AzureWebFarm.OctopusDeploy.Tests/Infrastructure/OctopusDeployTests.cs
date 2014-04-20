@@ -48,6 +48,19 @@ namespace AzureWebFarm.OctopusDeploy.Tests.Infrastructure
         }
 
         [Fact]
+        [UseReporter(typeof(DiffReporter))]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void WhenUninstallingTentacle_ThenTheCorrectCommandsShouldBeSentToTentacleExe()
+        {
+            var b = new StringBuilder();
+            _container.Resolve<IProcessRunner>().WhenForAnyArgs(r => r.Run(null, null)).Do(a => b.AppendLine(string.Format("{0} {1}", a[0], a[1])));
+
+            _sut.UninstallTentacle();
+
+            Approvals.Verify(b.ToString());
+        }
+
+        [Fact]
         public void WhenDeletingMachine_ThenDeleteTheMachineFromOctopusServer()
         {
             var thisMachine = new MachineResource();

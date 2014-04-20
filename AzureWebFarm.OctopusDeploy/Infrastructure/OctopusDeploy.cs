@@ -13,10 +13,13 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
 {
     internal class OctopusDeploy
     {
+        private const string InstanceArg = "--instance \"Tentacle\"";
         private readonly string _machineName;
         private readonly ConfigSettings _config;
         private readonly IProcessRunner _processRunner;
         private readonly IOctopusRepository _repository;
+        private readonly string _tentaclePath;
+        private readonly string _tentacleInstallPath;
 
         public OctopusDeploy(string machineName, ConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner)
         {
@@ -24,22 +27,20 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             _config = config;
             _processRunner = processRunner;
             _repository = repository;
+            _tentacleInstallPath = _config.TentacleInstallPath;
+            _tentaclePath = Path.Combine(_tentacleInstallPath, "Tentacle", "Tentacle.exe");
         }
 
         public void ConfigureTentacle()
         {
-            const string instanceArg = "--instance \"Tentacle\"";
             var tentacleDeploymentsPath = _config.TentacleDeploymentsPath;
-            var tentacleInstallPath = _config.TentacleInstallPath;
-            var tentacleDir = Path.Combine(tentacleInstallPath, "Tentacle");
-            var tentaclePath = Path.Combine(tentacleDir, "Tentacle.exe");
 
-            _processRunner.Run(tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", instanceArg, Path.Combine(tentacleInstallPath, "Tentacle.config")));
-            _processRunner.Run(tentaclePath, string.Format("new-certificate {0} --console", instanceArg));
-            _processRunner.Run(tentaclePath, string.Format("configure {0} --home \"{1}\" --console", instanceArg, tentacleDeploymentsPath.Substring(0, tentacleDeploymentsPath.Length - 1)));
-            _processRunner.Run(tentaclePath, string.Format("configure {0} --app \"{1}\" --console", instanceArg, Path.Combine(tentacleDeploymentsPath, "Applications")));
-            _processRunner.Run(tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", instanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _machineName));
-            _processRunner.Run(tentaclePath, string.Format("service {0} --install --start --console", instanceArg));
+            _processRunner.Run(_tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", InstanceArg, Path.Combine(_tentacleInstallPath, "Tentacle.config")));
+            _processRunner.Run(_tentaclePath, string.Format("new-certificate {0} --console", InstanceArg));
+            _processRunner.Run(_tentaclePath, string.Format("configure {0} --home \"{1}\" --console", InstanceArg, tentacleDeploymentsPath.Substring(0, tentacleDeploymentsPath.Length - 1)));
+            _processRunner.Run(_tentaclePath, string.Format("configure {0} --app \"{1}\" --console", InstanceArg, Path.Combine(tentacleDeploymentsPath, "Applications")));
+            _processRunner.Run(_tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", InstanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _machineName));
+            _processRunner.Run(_tentaclePath, string.Format("service {0} --install --start --console", InstanceArg));
         }
 
         public void DeleteMachine()
@@ -98,6 +99,13 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         public static IOctopusRepository GetRepository(ConfigSettings config)
         {
             return new OctopusRepository(new OctopusServerEndpoint(config.OctopusServer, config.OctopusApiKey));
+        }
+
+        public void UninstallTentacle()
+        {
+            _processRunner.Run(_tentaclePath, string.Format("service {0} --stop --uninstall --console", InstanceArg));
+            _processRunner.Run(_tentaclePath, string.Format("delete-instance {0} --console", InstanceArg));
+            _processRunner.Run("msiexec", string.Format("/uninstall \"{0}{1}\" /quiet", _tentacleInstallPath, "Octopus.Tentacle.msi"));
         }
     }
 }
