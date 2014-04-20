@@ -61,6 +61,14 @@ namespace AzureWebFarm.OctopusDeploy.Tests.Infrastructure
         }
 
         [Fact]
+        public void WhenUninstallingTentacle_ThenDeleteTheOctopusRegistryKey()
+        {
+            _sut.UninstallTentacle();
+
+            _container.Resolve<IRegistryEditor>().Received().DeleteLocalMachineTree("Software", "Octopus");
+        }
+
+        [Fact]
         public void WhenDeletingMachine_ThenDeleteTheMachineFromOctopusServer()
         {
             var thisMachine = new MachineResource();

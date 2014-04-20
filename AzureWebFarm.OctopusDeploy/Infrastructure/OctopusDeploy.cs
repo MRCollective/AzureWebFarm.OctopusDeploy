@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.Win32;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -17,15 +18,17 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         private readonly string _machineName;
         private readonly ConfigSettings _config;
         private readonly IProcessRunner _processRunner;
+        private readonly IRegistryEditor _registryEditor;
         private readonly IOctopusRepository _repository;
         private readonly string _tentaclePath;
         private readonly string _tentacleInstallPath;
 
-        public OctopusDeploy(string machineName, ConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner)
+        public OctopusDeploy(string machineName, ConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner, IRegistryEditor registryEditor)
         {
             _machineName = machineName;
             _config = config;
             _processRunner = processRunner;
+            _registryEditor = registryEditor;
             _repository = repository;
             _tentacleInstallPath = _config.TentacleInstallPath;
             _tentaclePath = Path.Combine(_tentacleInstallPath, "Tentacle", "Tentacle.exe");
@@ -106,6 +109,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             _processRunner.Run(_tentaclePath, string.Format("service {0} --stop --uninstall --console", InstanceArg));
             _processRunner.Run(_tentaclePath, string.Format("delete-instance {0} --console", InstanceArg));
             _processRunner.Run("msiexec", string.Format("/uninstall \"{0}{1}\" /quiet", _tentacleInstallPath, "Octopus.Tentacle.msi"));
+            _registryEditor.DeleteLocalMachineTree("Software", "Octopus");
         }
     }
 }
