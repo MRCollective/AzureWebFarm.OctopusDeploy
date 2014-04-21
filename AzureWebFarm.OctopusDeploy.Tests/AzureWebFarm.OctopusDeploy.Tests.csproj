@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\OctopusDeployTests.cs" />
+    <Compile Include="Infrastructure\RegistryEditorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\XdtTests.cs" />
   </ItemGroup>

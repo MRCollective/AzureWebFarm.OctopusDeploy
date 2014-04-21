@@ -1,0 +1,3 @@
+﻿c:\Install\Tentacle\Tentacle.exe service --instance "Tentacle" --stop --uninstall --console
+c:\Install\Tentacle\Tentacle.exe delete-instance --instance "Tentacle" --console
+msiexec /uninstall "c:\InstallOctopus.Tentacle.msi" /quiet

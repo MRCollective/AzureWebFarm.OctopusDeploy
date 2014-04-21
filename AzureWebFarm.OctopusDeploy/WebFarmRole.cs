@@ -11,7 +11,6 @@ namespace AzureWebFarm.OctopusDeploy
     /// </summary>
     public class WebFarmRole
     {
-        private readonly ConfigSettings _config;
         private readonly Infrastructure.OctopusDeploy _octopusDeploy;
 
         /// <summary>
@@ -21,14 +20,15 @@ namespace AzureWebFarm.OctopusDeploy
         public WebFarmRole(string machineName = null)
         {
             Log.Logger = AzureEnvironment.GetAzureLogger();
-            _config = AzureEnvironment.GetConfigSettings();
+            var config = AzureEnvironment.GetConfigSettings();
 
-            machineName = machineName ?? AzureEnvironment.GetMachineName(_config);
-            var octopusRepository = Infrastructure.OctopusDeploy.GetRepository(_config);
+            machineName = machineName ?? AzureEnvironment.GetMachineName(config);
+            var octopusRepository = Infrastructure.OctopusDeploy.GetRepository(config);
             var processRunner = new ProcessRunner();
-            _octopusDeploy = new Infrastructure.OctopusDeploy(machineName, _config, octopusRepository, processRunner);
+            var registryEditor = new RegistryEditor();
+            _octopusDeploy = new Infrastructure.OctopusDeploy(machineName, config, octopusRepository, processRunner, registryEditor);
 
-            AzureEnvironment.RequestRecycleIfConfigSettingChanged(_config);
+            AzureEnvironment.RequestRecycleIfConfigSettingChanged(config);
         }
 
         /// <summary>
@@ -74,6 +74,7 @@ namespace AzureWebFarm.OctopusDeploy
         /// </summary>
         public void OnStop()
         {
+            _octopusDeploy.UninstallTentacle();
             _octopusDeploy.DeleteMachine();
             IisEnvironment.WaitForAllHttpRequestsToEnd();
         }

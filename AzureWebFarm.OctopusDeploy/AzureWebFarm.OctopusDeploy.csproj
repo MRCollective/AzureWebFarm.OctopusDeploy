@@ -99,6 +99,7 @@
     <Compile Include="Infrastructure\IisEnvironment.cs" />
     <Compile Include="Infrastructure\OctopusDeploy.cs" />
     <Compile Include="Infrastructure\ProcessRunner.cs" />
+    <Compile Include="Infrastructure\RegistryEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebFarmRole.cs" />
   </ItemGroup>
