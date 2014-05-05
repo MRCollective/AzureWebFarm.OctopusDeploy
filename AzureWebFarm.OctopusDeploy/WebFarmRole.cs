@@ -22,7 +22,7 @@ namespace AzureWebFarm.OctopusDeploy
             Log.Logger = AzureEnvironment.GetAzureLogger();
             var config = AzureEnvironment.GetConfigSettings();
 
-            machineName = machineName ?? GetMachineName(config);
+            machineName = machineName ?? AzureEnvironment.GetMachineName(config);
             var octopusRepository = Infrastructure.OctopusDeploy.GetRepository(config);
             var processRunner = new ProcessRunner();
             var registryEditor = new RegistryEditor();
@@ -77,18 +77,6 @@ namespace AzureWebFarm.OctopusDeploy
             _octopusDeploy.UninstallTentacle();
             _octopusDeploy.DeleteMachine();
             IisEnvironment.WaitForAllHttpRequestsToEnd();
-        }
-
-        private static string GetMachineName(ConfigSettings config)
-        {
-            var machineName = AzureEnvironment.GetMachineName(config);
-
-            if (!string.IsNullOrEmpty(config.TentacleMachineNameSuffix))
-            {
-                machineName = machineName + "_" + config.TentacleMachineNameSuffix;
-            }
-
-            return machineName;
         }
     }
 }

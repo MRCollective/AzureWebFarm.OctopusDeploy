@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\AzureEnvironment.cs" />
+    <Compile Include="Infrastructure\AzureRoleEnvironment.cs" />
     <Compile Include="Infrastructure\ConfigSettings.cs" />
     <Compile Include="Infrastructure\IisEnvironment.cs" />
     <Compile Include="Infrastructure\OctopusDeploy.cs" />
