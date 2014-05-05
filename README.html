@@ -1,0 +1,280 @@
+<h1>AzureWebFarm.OctopusDeploy</h1>
+
+<p>This project allows you to easily create an <a href="http://www.windowsazure.com/en-us/services/cloud-services/">infinitely-scalable farm of IIS 8 / Windows Server 2012 web servers using Windows Azure Web Roles</a> that are deployed to by an <a href="http://octopusdeploy.com/">OctopusDeploy</a> server.</p>
+
+<p><img src="https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png" alt="AzureWebFarm.OctopusDeploy logo" />
+Logo courtesy of Aoife Doyle (thanks so much - it's awesome!)</p>
+
+<p>It's really easy to get up and running - more details below, but in short:</p>
+
+<ol>
+<li>Configure a standard Web Role project in Visual Studio</li>
+<li><code>Install-Package AzureWebFarm.OctopusDeploy</code></li>
+<li>Configure 4 cloud service variables - <code>OctopusServer</code>, <code>OctopusApiKey</code>, <code>TentacleEnvironment</code> and <code>TentacleRole</code></li>
+<li>Deploy to Azure and watch the magic happen!</li>
+</ol>
+
+<h2>tl;dr</h2>
+
+<ul>
+<li><a href="#pre-requisites">Pre-requisites</a></li>
+<li><a href="#installation-instructions">Installation Instructions</a>
+<ul>
+<li><a href="#pre-packaged-deployment">Pre-packaged deployment</a></li>
+<li><a href="#custom-install">Custom install</a></li>
+</ul></li>
+<li><a href="#local-debugging">Local debugging</a></li>
+<li><a href="#remote-debugging">Remote debugging</a></li>
+<li><a href="#what-if-i-want-to-use-web-roles-but-dont-want-to-pay-for-another-vm--dont-want-to-use-octopusdeploy">What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?</a></li>
+<li><a href="#what-happens-when-i-install-the-azurewebfarmoctopusdeploy-nuget-package">What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?</a></li>
+<li><a href="#what-if-i-want-to-deploy-non-net-applications">What if I want to deploy non-.NET applications?</a></li>
+<li><a href="#why-is-this-needed">Why is this needed?</a>
+<ul>
+<li><a href="#if-you-are-using-octopusdeploy-for-deployments-and-you-want-to-move-to-the-cloud">If you are using OctopusDeploy for deployments and you want to move to the cloud</a></li>
+<li><a href="#if-you-are-deploying-web-applications-to-windows-azure">If you are deploying web applications to Windows Azure</a></li>
+</ul></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#stay-abreast-of-the-latest-changes--releases">Stay abreast of the latest changes / releases</a></li>
+</ul>
+
+<h2>Pre-requisites</h2>
+
+<ul>
+<li>An <a href="http://docs.octopusdeploy.com/display/OD/Getting+started">OctopusDeploy server</a> using at least version 2.1 that is already configured with the <a href="http://docs.octopusdeploy.com/display/OD/Environments">environments</a>, <a href="http://docs.octopusdeploy.com/display/OD/Projects">projects</a>, <a href="http://docs.octopusdeploy.com/display/OD/Managing+users+and+teams">users</a> etc.; you will need to record the:
+<ul>
+<li><code>OctopusServer</code> - Octopus Server URL</li>
+<li><code>OctopusApiKey</code> - <a href="https://github.com/OctopusDeploy/OctopusDeploy-Api/wiki/Authentication">API key of a user</a> that has at least the following privileges in the environment you are deploying to: ("Environment manager" and "Project deployer") or ("System administrator")</li>
+<li><code>TentacleEnvironment</code> - Name of the environment that you want to deploy to</li>
+<li><code>TentacleRole</code> - Name of the role you want your web farm servers to have</li>
+<li><code>TentacleMachineNameSuffix</code> - The suffix to append to the machine name when adding the tentacle to octopus, allows for a single package to be reused with different config for multiple roles.</li>
+</ul></li>
+<li>Ensure that you open port 10943 on the Octopus Server so that Polling Tentacles can work, for more information view the documentation (http://docs.octopusdeploy.com/display/OD/Polling+Tentacles).</li>
+<li>Ensure that if you are using HTTPS (and you should be) for your OctopusDeploy server that the HTTPS certificate is <a href="https://github.com/OctopusDeploy/Issues/issues/742">valid or you include code to trust the invalid certificate</a></li>
+<li>You will need to <a href="http://docs.octopusdeploy.com/display/OD/IIS+Websites+and+Application+Pools">set up the website and app pool creation for your OctopusDeploy project</a> (including the hostname for your site in the binding(s)) when using this library (since IIS starts off as a blank slate).
+<ul>
+<li>You can create a CName alias from your domain name to the <code>&lt;mywebrolename&gt;.cloudapp.net</code> address</li>
+<li>If you want a naked domain then use a DNS provider that allows you to create ALIAS records or use a service like <a href="http://dnsazure.com/">dnsazure.com</a></li>
+</ul></li>
+<li>A <a href="http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#quick">Windows Azure Cloud Service</a> to host the web farm that has a <a href="http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#uploadcertificate">certificate uploaded to it</a> for RDP (and your HTTPS certificate if you are going to configure HTTPS)</li>
+<li>If you are creating a custom install (see below) then you need to have <a href="http://www.microsoft.com/web/downloads/platform.aspx">.NET Framework 4.5 and Windows Azure Tools 2.2</a> installed along with Visual Studio 2012 or above</li>
+<li>The latest version of NuGet - at least >= 2.7.2, as there is a <a href="http://docs.nuget.org/docs/release-notes/nuget-2.7.2">bug in some earlier versions</a> which can cause NuGet to miss adding a binding redirect for WindowsAzure.Storage.</li>
+</ul>
+
+<h2>Installation Instructions</h2>
+
+<p>You have two options for using AzureWebFarm.OctopusDeploy:</p>
+
+<ol>
+<li>You can use one of our pre-packaged cloud packages to avoid the need to crack open Visual Studio - this is really easy, but limits you to the standard configurations we have built</li>
+<li>You can install the project into a cloud project using NuGet and retain full control over how your cloud service is configured (and have the flexibility to have a non-standard configuration)</li>
+</ol>
+
+<h3>Pre-packaged deployment</h3>
+
+<p>If this is something you would use (download a pre-packaged set of .cspkg and .cscfg files to upload directly to the portal rather than having your own codebase that pulls in our NuGet package) let us know so we know it's a good idea to invest time in this idea! Communicate with us via Twitter <a href="http://twitter.com/robdmoore">@robdmoore</a> / <a href="http://twitter.com/mdaviesnet">@mdaviesnet</a> or alternatively create an issue on this GitHub project.</p>
+
+<h3>Custom install</h3>
+
+<p>Feel free to watch the <a href="http://youtu.be/2-tdTMt4dfE">screencast tutorial of these instructions</a>.</p>
+
+<p>The installation instructions form two parts - normal web role installation and AzureWebFarm.OctopusDeploy installation.</p>
+
+<p><strong>Creating a Web Role</strong></p>
+
+<ol>
+<li>Start a new Visual Studio solution by creating a new Windows Azure Cloud Service project - be sure to select .Net Framework 4.5 and Windows Azure Tools v2.2 when creating it
+<ul>
+<li><strong>Don't add a web or worker role at this point - just create the blank cloud project</strong></li>
+<li>This will henceforth be referred to as the "cloud project"</li>
+</ul></li>
+<li>Add a new "ASP.NET Empty Web Application" project to your solution - ensure it's .NET Framework 4.5
+<ul>
+<li>This will henceforth be referred to as the "web project"</li>
+</ul></li>
+<li>Right-click "Roles" on the cloud project, select "Add" > "Web Role Project in solution" and select the newly added web project</li>
+<li>Configure RDP by right-clicking the cloud project and select "Package", tick the "Enable Remote Desktop for all roles" checkbox, select a certificate that you have uploaded to your Windows Azure cloud service and specify a username/password/expiry</li>
+<li>Configure the number of instances that you want to initially deploy by changing this element in <code>ServiceConfiguration.Cloud.cscfg</code>: <code>&lt;Instances count="1" /&gt;</code> - <a href="https://www.windowsazure.com/en-us/support/legal/sla/">use at least 2 instances to meet the 99.95% SLA</a></li>
+<li>Add in a diagnostics connection string to the <code>ServiceConfiguration.Cloud.cscfg</code> file by changing this element: <code>&lt;Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="AccountName={ACCOUNTNAME};AccountKey={ACCOUNTKEY};DefaultEndpointsProtocol=https" /&gt;</code> - make sure there is NOT a trailing <code>;</code> or it will fail when you deploy</li>
+<li>Select and enter your vmsize into the <code>vmsize</code> attribute of the <code>WebRole</code> element in the <code>ServiceDefinition.csdef</code> file - I generally recommend (see the screencast for more informaton and explaination):
+<ul>
+<li><code>ExtraSmall</code> for test/dev farms (unless your application(s) chews up all the memory)</li>
+<li><code>Small</code> for small to medium load websites</li>
+<li><code>Medium</code> for medium to high load websites</li>
+</ul></li>
+<li>Consider adding a HTTPS web role endpoint and certificate (ensure the certificate is uploaded to your Cloud Service in Azure though)</li>
+<li>If you want to do a test deployment at this stage to make sure everything is configured correctly first check that <code>osFamily</code> is set to <code>3</code> in <code>ServiceConfiguration.Cloud.cscfg</code> - we check this setting automatically later, but you'll need to check it yourself to successfully deploy at this stage. You may also want to check your <code>Web.config</code> and <code>App.config</code> files to make sure there is a binding redirect there for <code>WindowsAzure.Storage</code>. Deploy your cloud package to Azure - your instances should reach the "Running" state. To publish your package you can use:
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/windowsazure/hh535756.aspx">Visual Studio</a></li>
+<li><a href="http://www.windowsazure.com/en-us/manage/services/cloud-services/how-to-create-and-deploy-a-cloud-service/#deploy">The Windows Azure portal</a></li>
+<li><a href="http://www.windowsazure.com/en-us/develop/net/common-tasks/continuous-delivery/#step4">A PowerShell script</a> e.g. from a CI server</li>
+</ul></li>
+</ol>
+
+<p><strong>Adding AzureWebFarm.OctopusDeploy to your Web Role</strong></p>
+
+<ol>
+<li>Execute the following in the Package Manager Console (or use the GUI): <code>Install-Package AzureWebFarm.OctopusDeploy</code>
+<ul>
+<li>Make sure it installs into the web project</li>
+<li>When prompted that a file has been modified click <strong>"Reload"</strong></li>
+<li>If prompted that a file already exists ie <code>WebRole.cs</code>, you should allow NuGet to override it with the file from our package</li>
+</ul></li>
+<li>(optional) <a href="#local-debugging">Debug locally</a></li>
+<li>Ensure that the <code>ServiceConfiguration.Cloud.cscfg</code> file has correct values for the <code>OctopusServer</code>, <code>OctopusApiKey</code>, <code>TentacleEnvironment</code> and <code>TentacleRole</code> variables</li>
+<li>Deploy to Azure as per step 9 above</li>
+</ol>
+
+<h2>Local debugging</h2>
+
+<p>It is a good idea to debug the farm locally to make sure your configuration is correct and your OctopusDeploy server is configured correctly:</p>
+
+<ol>
+<li>Ensure that there is only one instance locally by checking the <code>ServiceConfiguration.Local.cscfg</code> file has <code>&lt;Instances count="1" /&gt;</code></li>
+<li>Ensure that the <code>ServiceConfiguration.Local.cscfg</code> file has correct values for the <code>OctopusServer</code>, <code>OctopusApiKey</code>, <code>TentacleEnvironment</code> and <code>TentacleRole</code> variables</li>
+<li>Set the cloud project as the default project</li>
+<li>(optional) If you have already downloaded the tentacle installer and don't want to wait for the emulator to download it as part of startup then place the file at <code>c:\Octopus.Tentacle.msi</code> and it will automatically be used</li>
+<li>Hit F5 to start the Azure emulator</li>
+<li>If all goes well you should see your computer registered with your Octopus server and any current releases deployed to your local IIS server
+<ul>
+<li>If you need to debug the startup script then uncomment the relevant REM'd out lines in Startup\startup.cmd (but remember to recomment them before dpeloying to Azure or your Azure deployment WILL fail</li>
+<li>If you need to debug the RoleEntryPoint code then <a href="http://www.symbolsource.org/Public/Home/VisualStudio">set up your Visual Studio to debug using Symbol Source</a> and you should be able to step into the AzureWebFarm.OctopusDeploy code</li>
+</ul></li>
+</ol>
+
+<h2>Remote debugging</h2>
+
+<p>The following should be able to help you debug what is happening:</p>
+
+<ul>
+<li>RDP into the server:
+<ul>
+<li>Look at Event Viewer for application exceptions</li>
+<li>Look at C:\Resources\Temp\RoleTemp{GUID}\StartupLog.txt to see the output of <code>Startup\startup.cmd</code></li>
+</ul></li>
+<li>Look at the <code>LogEntity</code> table in table storage of the storage account you configured for Diagnostics to see the log output of the RoleEntryPoint</li>
+</ul>
+
+<h2>What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?</h2>
+
+<p>Check out our <a href="https://github.com/MRCollective/AzureWebFarm">AzureWebFarm</a> project, which is a similar concept except the farm contains everything you need to deploy within it - you simply MsDeploy your application to it and it will sync the new code across the whole farm for you.</p>
+
+<h2>What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?</h2>
+
+<p>Apart from adding the dependencies of the package and the dll the following actions are performed:</p>
+
+<ul>
+<li>To your web project:
+<ul>
+<li><code>Startup\startup.cmd</code> is added and set as "Copy always"</li>
+<li><code>Startup\startup.ps1</code> is added and set as "Copy always"</li>
+<li><code>WebRole.cs</code> is added</li>
+<li>Binding redirects are added to the <code>Web.config</code> file</li>
+<li>The binding redirects in the <code>Web.config</code> file are copied into a new <code>App.config</code> file that is used by the RoleEntryPoint code (since it doesn't run under IIS it can't use <code>Web.config</code>)</li>
+</ul></li>
+<li>To your cloud project:
+<ul>
+<li>The <code>{CloudProject}.ccproj</code> file is modified to add an MSBuild target that copies the <code>App.config</code> file from the web project to <code>bin\{WebProject}.dll.config</code> in the cloud package when it's built</li>
+<li>The <code>ServiceDefinition.csdef</code> file is changed to add:
+<ul>
+<li>Elevated privileges for the RoleEntryPoint code</li>
+<li>Startup\startup.cmd as an elevated privileges startup task that has selected environment variables</li>
+<li>A 1GB <code>Install</code> local resource directory (where the tentacle is installed) and a 19GB <code>Deployments</code> local resource directory (where deployments are stored) - if you aren't using ExtraSmall instances then you can increase the 19GB to a larger value</li>
+<li>Four configuration settings variables are added: <code>OctopusServer</code>, <code>OctopusApiKey</code>, <code>TentacleEnvironment</code> and <code>TentacleRole</code></li>
+</ul></li>
+<li>All <code>ServiceConfiguration.*.cscfg</code> files are changed to add the four configuration settings variables: <code>OctopusServer</code>, <code>OctopusApiKey</code>, <code>TentacleEnvironment</code> and <code>TentacleRole</code></li>
+</ul></li>
+</ul>
+
+<p>To see how we perform all of this "magic" checkout the <a href="https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/AzureWebFarm.OctopusDeploy/Tools/install.ps1">install.ps1</a> file.</p>
+
+<h2>What if I want to deploy non-.NET applications?</h2>
+
+<p>While .NET projects will work out of the box, IIS has the capability of running almost any programming language that you want - Python, PHP, Java, NodeJS, etc. If you are using a custom install of AzureWebFarm.OctopusDeploy then you have full flexibility to add extra startup tasks to configure IIS to enable these different languages. You can then add NuGet packages to OctopusDeploy to be deployed that don't contain a .NET application.</p>
+
+<h2>Why is this needed?</h2>
+
+<h3>If you are using OctopusDeploy for deployments and you want to move to the cloud</h3>
+
+<p>If you are using OctopusDeploy for your deployments and you want to migrate your application to the cloud then this project provides you a really easy pathway to continue using OctopusDeploy for your deployments, while having the hard work of setting up the infrastructure done for you.</p>
+
+<p>At the same time you benefit from the infinite scalability of Azure Web Roles (see next section for more information) and the App Initialisation Module configuration that we have enabled to improve startup performance of your applications.</p>
+
+<h3>If you are deploying web applications to Windows Azure</h3>
+
+<p><strong>Why are Web Roles sometimes necessary - everyone is using Azure Web Sites these days right?</strong></p>
+
+<p>Windows Azure Web Roles give you a <a href="http://robdmoore.id.au/blog/2012/06/09/windows-azure-web-sites-vs-web-roles/">range of advantages over Windows Azure Web Sites</a> that, depending on your application, might mean you aren't able to use Web Sites. The particularly important advantages are:</p>
+
+<ul>
+<li>You can scale to hundreds or even thousands of nodes (note: most subscriptions start with a limit of 20 cores, but you can talk to support to get more enabled; we've seen an <a href="http://blogs.janison.com.au/janison-blogs/2012/11/essa-in-2012.html">example here in Australia with 500 cores for instance</a>)</li>
+<li>You can connect Web Roles to <a href="http://www.windowsazure.com/en-us/services/virtual-network/">Windows Azure Virtual Network</a> (VPN) to enable hybrid cloud scenarios</li>
+<li>You can use SSL for free (it <a href="http://www.windowsazure.com/en-us/pricing/details/web-sites/#ssl-connections">costs extra for Web Sites</a>)</li>
+<li>You can open up non-standard TCP ports (i.e. anything other than 80 for HTTP and 443 for HTTPS)</li>
+<li>You have full control to configure IIS how you see fit</li>
+<li>You can run/install arbitrary software applications on role startup and if necessary with elevated privileges</li>
+<li>You can mount NTFS volumes from blob storage</li>
+<li>You can perform <a href="http://blogs.msdn.com/b/golive/archive/2012/04/26/auto-scaling-azure-with-wasabi-from-the-ground-up.aspx">complex auto-scaling</a></li>
+<li>You aren't restricted in what <a href="http://social.msdn.microsoft.com/Forums/windowsazure/en-US/b4a6eb43-0013-435f-9d11-00ee26a8d017/report-viewer-error-on-export-pdf-or-excel-from-azure-web-sites">parts of .NET you can use - e.g. GDI+ is disabled in Azure Web Sites</a></li>
+<li>You can RDP into the roles, which can sometimes make debugging easier</li>
+<li>You can configure complex diagnostics collection rules across the whole farm using <a href="http://www.windowsazure.com/en-us/develop/net/common-tasks/diagnostics/">Windows Azure Diagnostics</a></li>
+<li>You have more choice of VM size/specification and (currently at least) deployment location</li>
+</ul>
+
+<p>If your application fits within the bounds of what's possible with <a href="http://www.windowsazure.com/en-us/services/web-sites/">Azure Web Sites</a> then we generally recommend that you use it since it provides a seamless development, deployment, debugging and support experience out-of-the-box across a number of software languages and in particular the deployment experience is quick and comprehensive.</p>
+
+<p><strong>Fair enough, so why use Web Roles over Virtual Machines - VMs are way more flexible right?</strong></p>
+
+<p>If for one of the reasons above or perhaps one of the <a href="http://robdmoore.id.au/blog/2012/06/09/windows-azure-web-sites-vs-web-roles/">other possible reasons</a> you can't use Web Sites then you are left with a choice of Windows Azure Web Roles or Windows Azure Virtual Machines. There are a number of <a href="https://github.com/robdmoore/AzureWebAppsPresentation/">advantages and disadvantages to both</a>, but we would generally recommend Web Roles over Virtual Machines where possible because:</p>
+
+<ul>
+<li>The infrastructure for Web Roles is managed for you - you automatically get Windows Updates and OS upgrades (assuming you have at least 2 roles, which is necessary for the 99.95% SLA)</li>
+<li>Scaling Virtual Machines is very difficult and it's impractical to scale more than 10s of nodes (without a lot of automation work and even then the storage costs would start adding up)</li>
+<li>Similarly, if you want to do auto-scaling beyond the basic CPU/memory scaling available in the portal then you need to implement it yourself</li>
+</ul>
+
+<p><strong>OK, so what are the main disadvantages with Web Roles then - it can't be a silver bullet right?</strong></p>
+
+<p>It must be said that Web Roles aren't perfect; there are three main disadvantages that we see with Web Roles:</p>
+
+<ol>
+<li>The out-of-the-box deployment experience leaves a lot to be desired - it's slow and error-prone
+<ul>
+<li>To clarify: What is happening is <em>amazing</em> - within 8-15 minutes a number of customised, RDP-accessible, Virtual Machines are being provisioned for you on a static IP address and those machines can be scaled up or down at any time and they have health monitoring and diagnostics capabilities built-in as well as a powerful load balancer!</li>
+<li>The problem lies when you tie that deployment process to the deployment of a software application (like most of the Web Roles tutorials you will read suggest you do) - waiting 8-15 minutes for a VM to be provisioned is amazing; waiting 8-15 minutes for the latest version of your software application to be deployed is unacceptably slow</li>
+<li>The way we see it - you should treat a Web Role as infrastructure rather than an application and you should deploy your applications to a farm of Web Roles that have been previously set up</li>
+<li>This leads us to the second disadvantage of Web Roles...</li>
+</ul></li>
+<li>If you change state in a role dynamically (e.g. change IIS settings, install a program, deploy some files to IIS, etc.) then as soon as the role is restarted/recycled (e.g. a Windows Update is applied or you change a configuration setting that requires a recycle) you lose that state
+<ul>
+<li>It should be noted that this is also the main advantage of Web Roles in that it's what allows them to be so scalable - each role is treated homogenously with the others and so can be shutdown and spun up as needed - it just requires you to specify everything that is needed for that role in the package (.cspkg) file for the operation and lifetime of that role</li>
+<li>The fact that you can run arbitrary code at startup and shutdown of the role means that you can do <em>anything you want</em> though; you just need to work within the bounds of the platform (it is afterall PaaS, not IaaS) - that's what we've taken advantage of to enable this project to be possible</li>
+</ul></li>
+<li>Tying your application code to your Web Role:
+<ul>
+<li>Increases your solution complexity - you have another project in your solution and on top of that your deployment is more complex because rather than packaging/deploying the site you are packaging/deploying the site inside of a Web Role package</li>
+<li>Often leads to developers tying the application to the Web Role's development model even though sites should be agnostic of that and leave you with flexibility to deploy it anywhere (e.g. on-premise, AWS, Azure Web Sites, etc.)</li>
+</ul></li>
+</ol>
+
+<p><strong>How does AzureWebFarm.OctopusDeploy allow me to use Web Roles without any of the disadvantages?</strong></p>
+
+<ol>
+<li>The first disadvantage above is simply taken care of by how <a href="http://octopusdeploy.com/">awesome the deployment experience is with OctopusDeploy</a></li>
+<li>We've worked with the development model that Windows Azure Web Roles gives you so that the roles don't need to be changed dynamically to function as an OctopusDeploy-powered web farm; they will automatically:
+<ul>
+<li>Install an OctopusDeploy tentacle</li>
+<li>Register the tentacle with an OctopusDeploy server in an environment and with a role all specified by you</li>
+<li>Deploy the latest version of all relevant applications to the role before it's registered with the load balancer on startup - when it registers with the load balancer it's good-to-go</li>
+<li>Configure the <a href="http://www.iis.net/learn/get-started/whats-new-in-iis-8/iis-80-application-initialization">IIS App Initialisation Module</a> for all sites and app pools to improve performance of your applications</li>
+<li>De-register the tentacle from the OctopusDeploy server on shutdown or recycle - thus your OctopusDeploy server will always show the current state of affairs</li>
+</ul></li>
+<li>By deploying a web farm separate to your applications and then using OctopusDeploy to deploy your applications to the farm you can develop your applications completely agnostically of the fact you are deploying them to Azure</li>
+</ol>
+
+<h2>Contributing</h2>
+
+<p>If you would like to contribute to this project then feel free to communicate with us via Twitter <a href="http://twitter.com/robdmoore">@robdmoore</a> / <a href="http://twitter.com/mdaviesnet">@mdaviesnet</a> or alternatively send a pull request / issue to this GitHub project.</p>
+
+<h2>Stay abreast of the latest changes / releases</h2>
+
+<p>Follow the <a href="http://twitter.com/MRCollectiveNet">MRCollective</a> twitter account.</p>
