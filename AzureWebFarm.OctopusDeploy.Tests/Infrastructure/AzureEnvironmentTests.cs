@@ -12,6 +12,8 @@ namespace AzureWebFarm.OctopusDeploy.Tests.Infrastructure
         [Fact]
         public void GivenSuffixIsEmpty_WhenGeneratingFarmName_ThenUseMachineNameAndEnvironment()
         {
+            AzureRoleEnvironment.IsAvailable = () => false;
+            AzureRoleEnvironment.IsEmulated = () => false;
             var machineName = Environment.MachineName;
             _config.TentacleMachineNameSuffix = "";
             _config.TentacleEnvironment = "Production";
@@ -24,6 +26,8 @@ namespace AzureWebFarm.OctopusDeploy.Tests.Infrastructure
         [Fact]
         public void GivenSuffixIsNotEmpty_WhenGeneratingFarmName_ThenUseMachineNameAndEnvironmentAndSuffix()
         {
+            AzureRoleEnvironment.IsAvailable = () => false;
+            AzureRoleEnvironment.IsEmulated = () => false;
             var machineName = Environment.MachineName;
             _config.TentacleMachineNameSuffix = "Suffix";
             _config.TentacleEnvironment = "Production";
