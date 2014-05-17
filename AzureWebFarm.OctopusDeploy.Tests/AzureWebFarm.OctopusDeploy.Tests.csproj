@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\AzureEnvironmentTests.cs" />
+    <Compile Include="Infrastructure\ConfigSettingsTests.cs" />
     <Compile Include="Infrastructure\OctopusDeployTests.cs" />
     <Compile Include="Infrastructure\RegistryEditorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -35,14 +35,14 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         
         public ConfigSettings(Func<string, string> configSettingsGetter, Func<string, string> configPathGetter)
         {
-            _octopusServer = configSettingsGetter(OctopusServerConfigName);
-            _octopusApiKey = configSettingsGetter(OctopusApiKeyConfigName);
-            _tentacleEnvironment = configSettingsGetter(TentacleEnvironmentConfigName);
-            _tentacleRole = configSettingsGetter(TentacleRoleConfigName);
-            _tentacleMachineNameSuffix = configSettingsGetter(TentacleMachineNameSuffixConfigName);
+            _octopusServer = SafeGetConfigSetting(configSettingsGetter, OctopusServerConfigName);
+            _octopusApiKey = SafeGetConfigSetting(configSettingsGetter, OctopusApiKeyConfigName);
+            _tentacleEnvironment = SafeGetConfigSetting(configSettingsGetter, TentacleEnvironmentConfigName);
+            _tentacleRole = SafeGetConfigSetting(configSettingsGetter, TentacleRoleConfigName);
+            _tentacleMachineNameSuffix = SafeGetConfigSetting(configSettingsGetter, TentacleMachineNameSuffixConfigName);
 
-            _tentacleDeploymentsPath = configPathGetter(TentacleDeploymentsPathConfigName);
-            _tentacleInstallPath = configPathGetter(TentacleInstallPathConfigName);
+            _tentacleDeploymentsPath = SafeGetConfigSetting(configPathGetter, TentacleDeploymentsPathConfigName);
+            _tentacleInstallPath = SafeGetConfigSetting(configPathGetter, TentacleInstallPathConfigName);
         }
 
         public string OctopusServer { get { return _octopusServer; } }
@@ -58,5 +58,31 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         {
             return ConfigSettingsNames.Contains(name);
         }
+
+        public string SafeGetConfigSetting(Func<string, string> configSettingsGetter, string settingName)
+        {
+            try
+            {
+                return configSettingsGetter(settingName) ?? "";
+            }
+            catch (Exception e)
+            {
+                throw new UnableToGetConfigSettingException(settingName, e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Error getting a config setting.
+    /// </summary>
+    public class UnableToGetConfigSettingException : Exception
+    {
+        /// <summary>
+        /// Create the exception for the setting in question.
+        /// </summary>
+        /// <param name="settingName">The name of the setting an error was raised for</param>
+        /// <param name="exception">The exception that was raised when getting the setting</param>
+        public UnableToGetConfigSettingException(string settingName, Exception exception)
+            : base("Unable to get config setting: " + settingName, exception) {}
     }
 }
