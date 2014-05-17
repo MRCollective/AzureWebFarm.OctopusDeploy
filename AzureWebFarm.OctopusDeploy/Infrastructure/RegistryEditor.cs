@@ -4,8 +4,15 @@ using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy.Infrastructure
 {
+    /// <summary>
+    /// Performs edits to the machines local registry.
+    /// </summary>
     public interface IRegistryEditor
     {
+        /// <summary>
+        /// Recursively delete a sub tree from the HKLM node in local registry.
+        /// </summary>
+        /// <param name="pathToTree">The path to the sub tree to delete</param>
         void DeleteLocalMachineTree(params string[] pathToTree);
     }
 
