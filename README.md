@@ -10,7 +10,7 @@ It's really easy to get up and running - more details below, but in short:
 
 1. Configure a standard Web Role project in Visual Studio
 2. `Install-Package AzureWebFarm.OctopusDeploy`
-3. Configure 4 cloud service variables - `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
+3. Configure 5 cloud service variableos - `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment`, `TentacleRole` and `TentacleMachineNameSuffix`
 4. Deploy to Azure and watch the magic happen!
 
 tl;dr
@@ -38,7 +38,7 @@ Pre-requisites
     * `OctopusApiKey` - [API key of a user](https://github.com/OctopusDeploy/OctopusDeploy-Api/wiki/Authentication) that has at least the following privileges in the environment you are deploying to: ("Environment manager" and "Project deployer") or ("System administrator")
     * `TentacleEnvironment` - Name of the environment that you want to deploy to
     * `TentacleRole` - Name of the role you want your web farm servers to have
-    * `TentacleMachineNameSuffix` - The suffix to append to the machine name when adding the tentacle to octopus, allows for a single package to be reused with different config for multiple roles.
+    * `TentacleMachineNameSuffix` - The suffix to append to the machine name when adding the tentacle to octopus, allows for a single package to be reused with different config for multiple farms against the same OctopusDeploy server.
 * Ensure that you open port 10943 on the Octopus Server so that Polling Tentacles can work, for more information view the documentation (http://docs.octopusdeploy.com/display/OD/Polling+Tentacles).
 * Ensure that if you are using HTTPS (and you should be) for your OctopusDeploy server that the HTTPS certificate is [valid or you include code to trust the invalid certificate](https://github.com/OctopusDeploy/Issues/issues/742)
 * You will need to [set up the website and app pool creation for your OctopusDeploy project](http://docs.octopusdeploy.com/display/OD/IIS+Websites+and+Application+Pools) (including the hostname for your site in the binding(s)) when using this library (since IIS starts off as a blank slate).
@@ -93,7 +93,7 @@ The installation instructions form two parts - normal web role installation and 
     * When prompted that a file has been modified click **"Reload"**
     * If prompted that a file already exists ie `WebRole.cs`, you should allow NuGet to override it with the file from our package
 2. (optional) [Debug locally](#local-debugging)
-3. Ensure that the `ServiceConfiguration.Cloud.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
+3. Ensure that the `ServiceConfiguration.Cloud.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment`, `TentacleRole` and `TentacleMachineNameSuffix` variables
 4. Deploy to Azure as per step 9 above
 
 Local debugging
@@ -101,7 +101,7 @@ Local debugging
 It is a good idea to debug the farm locally to make sure your configuration is correct and your OctopusDeploy server is configured correctly:
 
 1. Ensure that there is only one instance locally by checking the `ServiceConfiguration.Local.cscfg` file has `<Instances count="1" />`
-2. Ensure that the `ServiceConfiguration.Local.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole` variables
+2. Ensure that the `ServiceConfiguration.Local.cscfg` file has correct values for the `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment`, `TentacleRole` and `TentacleMachineNameSuffix` variables
 3. Set the cloud project as the default project
 4. (optional) If you have already downloaded the tentacle installer and don't want to wait for the emulator to download it as part of startup then place the file at `c:\Octopus.Tentacle.msi` and it will automatically be used
 5. Hit F5 to start the Azure emulator
@@ -140,8 +140,8 @@ Apart from adding the dependencies of the package and the dll the following acti
         * Elevated privileges for the RoleEntryPoint code
         * Startup\startup.cmd as an elevated privileges startup task that has selected environment variables
         * A 1GB `Install` local resource directory (where the tentacle is installed) and a 19GB `Deployments` local resource directory (where deployments are stored) - if you aren't using ExtraSmall instances then you can increase the 19GB to a larger value
-        * Four configuration settings variables are added: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
-    * All `ServiceConfiguration.*.cscfg` files are changed to add the four configuration settings variables: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment` and `TentacleRole`
+        * Five configuration settings variables are added: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment`, `TentacleRole` and `TentacleMachineNameSuffix`
+    * All `ServiceConfiguration.*.cscfg` files are changed to add the five configuration settings variables: `OctopusServer`, `OctopusApiKey`, `TentacleEnvironment`, `TentacleRole` and `TentacleMachineNameSuffix`
 
 To see how we perform all of this "magic" checkout the [install.ps1](https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/AzureWebFarm.OctopusDeploy/Tools/install.ps1) file.
 
