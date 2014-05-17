@@ -6,6 +6,7 @@
       <x:Setting name="OctopusApiKey" value="API-OCTOPUSAPIKEY" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
       <x:Setting name="TentacleEnvironment" value="ENVIRONMENT" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
       <x:Setting name="TentacleRole" value="ROLE" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
+      <x:Setting name="TentacleMachineNameSuffix" value="" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
     </x:ConfigurationSettings>
   </x:Role>
 </x:ServiceConfiguration>

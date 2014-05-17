@@ -23,11 +23,16 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             };
         }
 
-        public static string GetMachineName(ConfigSettings config)
+        public static string GetMachineName(IConfigSettings config)
         {
-            return RoleEnvironment.IsEmulated
+            var name = AzureRoleEnvironment.IsEmulated()
                 ? Environment.MachineName
-                : String.Format("{0}_{1}", RoleEnvironment.CurrentRoleInstance.Id, config.TentacleEnvironment);
+                : string.Format("{0}_{1}", AzureRoleEnvironment.CurrentRoleInstanceId(), config.TentacleEnvironment);
+
+            if (!string.IsNullOrEmpty(config.TentacleMachineNameSuffix))
+                name = string.Format("{0}_{1}", name, config.TentacleMachineNameSuffix);
+
+            return name;
         }
 
         public static ConfigSettings GetConfigSettings()

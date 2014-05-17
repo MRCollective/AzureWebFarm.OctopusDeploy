@@ -41,6 +41,7 @@
       <Setting name="OctopusApiKey" />
       <Setting name="TentacleEnvironment" />
       <Setting name="TentacleRole" />
+      <Setting name="TentacleMachineNameSuffix" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>

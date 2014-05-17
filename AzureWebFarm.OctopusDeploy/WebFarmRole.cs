@@ -79,6 +79,4 @@ namespace AzureWebFarm.OctopusDeploy
             IisEnvironment.WaitForAllHttpRequestsToEnd();
         }
     }
-
-    
 }

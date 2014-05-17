@@ -110,6 +110,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             _processRunner.Run(_tentaclePath, string.Format("delete-instance {0} --console", InstanceArg));
             _processRunner.Run("msiexec", string.Format("/uninstall \"{0}{1}\" /quiet", _tentacleInstallPath, "Octopus.Tentacle.msi"));
             _registryEditor.DeleteLocalMachineTree("Software", "Octopus");
+            _processRunner.Run("cmd.exe", string.Format("/c del \"{0}{1}\"", _tentacleInstallPath, "Tentacle.config"));
         }
     }
 }
