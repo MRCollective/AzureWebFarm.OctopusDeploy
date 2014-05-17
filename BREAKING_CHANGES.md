@@ -1,8 +1,8 @@
 AzureWebFarm.OctopusDeploy Breaking Changes
--------------------------------------------
+===========================================
 
 Version 1.2.0
-=============
+-------------
 
 ### `TentacleMachineNameSuffix` cloud config property added
 
