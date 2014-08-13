@@ -145,6 +145,47 @@ Apart from adding the dependencies of the package and the dll the following acti
 
 To see how we perform all of this "magic" checkout the [install.ps1](https://github.com/MRCollective/AzureWebFarm.OctopusDeploy/blob/master/AzureWebFarm.OctopusDeploy/Tools/install.ps1) file.
 
+What if I want to deploy Windows Services?
+------------------------------------------
+You can deploy and host a non IIS based Windows Service in an Azure role using almost exactly the same approach as above for a standard web role with a few small modifications.
+* To your service project
+	* Ensure that your service startup type is set to "Manual" and not "Automatic". Otherwise your service will start before Octopus and Azure can work their magic.
+	
+* To your cloud project
+	* Open WebRole.cs and in the OnStop() method before anything else is called add some logic to ensure the service is stopped.
+	```C#
+	public override void OnStop()
+	{
+		StopService("Your Service Name");
+		_webFarmRole.OnStop();
+	}
+
+	private void StopService(string serviceName)
+	{
+		Log.Information("{serviceName} OnStop called", serviceName);
+		try
+		{
+			var serviceController = new ServiceController(serviceName);
+			Log.Information("{serviceName} current status is {serviceStatus}", serviceName, serviceController.Status);
+			if (serviceController.Status == ServiceControllerStatus.Stopped)
+			{
+				Log.Warning("{serviceName} was already stopped. Nothing more to do", serviceName);
+			}
+			else
+			{
+				Log.Information("Attempting to stop {serviceName}", serviceName);
+				serviceController.Stop();
+				Log.Information("{serviceName} was successfully stopped", serviceName);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log.Fatal(ex, "Error occurred while attempting to stop {serviceName}", serviceName);
+			throw;
+		}
+	}
+	```
+	
 What if I want to deploy non-.NET applications?
 -----------------------------------------------
 
