@@ -23,6 +23,7 @@ tl;dr
 * [Remote debugging](#remote-debugging)
 * [What if I want to use Web Roles, but don't want to pay for another VM / don't want to use OctopusDeploy?](#what-if-i-want-to-use-web-roles-but-dont-want-to-pay-for-another-vm--dont-want-to-use-octopusdeploy)
 * [What happens when I install the AzureWebFarm.OctopusDeploy NuGet package?](#what-happens-when-i-install-the-azurewebfarmoctopusdeploy-nuget-package)
+* [What if I want to deploy Windows Services?](#what-if-i-want-to-deploy-windows-services)
 * [What if I want to deploy non-.NET applications?](#what-if-i-want-to-deploy-non-net-applications)
 * [Why is this needed?](#why-is-this-needed)
     * [If you are using OctopusDeploy for deployments and you want to move to the cloud](#if-you-are-using-octopusdeploy-for-deployments-and-you-want-to-move-to-the-cloud)
@@ -147,7 +148,10 @@ To see how we perform all of this "magic" checkout the [install.ps1](https://git
 
 What if I want to deploy Windows Services?
 ------------------------------------------
-You can deploy and host a non IIS based Windows Service in an Azure role using almost exactly the same approach as above for a standard web role with a few small modifications.
+OctopusDeploy makes it [really easy to deploy Windows Services](https://octopusdeploy.com/automated-deployments/windows-service-deployment) and [we highly encourage you to perform your background processing using AzureWebFarm.OctopusDeploy](http://robdmoore.id.au/blog/2014/07/22/my-stance-on-azure-worker-roles/) in favour of Worker Roles so you can take advantage of the faster deployment time.
+
+There is a slight caveat in that the Windows Service runs outside of the lifecycle of a role being brought up and down. This means that if your Windows Service is still running when a role restarts (e.g. due to Microsoft rolling out patches) it might still be locking dll files that Azure is trying to delete. Because of this you need to observe the following advice.
+
 * To your service project
 	* Ensure that your service startup type is set to "Manual" and not "Automatic". Otherwise your service will start before Octopus and Azure can work their magic.
 	
