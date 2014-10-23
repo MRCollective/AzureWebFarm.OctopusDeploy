@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceDefinition name="AzureWebFarmOctopus" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
+<ServiceDefinition name="AzureWebFarmOctopus" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2014-06.2.4">
   <WebRole name="ExampleWebFarm" vmsize="Small">
     <Runtime executionContext="elevated" />
     <Startup>
@@ -28,9 +28,9 @@
       <InputEndpoint name="HTTP" protocol="http" port="80" />
     </Endpoints>
     <Imports>
-      <Import moduleName="Diagnostics" />
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
+      <Import moduleName="Diagnostics" />
     </Imports>
     <LocalResources>
       <LocalStorage name="Install" cleanOnRoleRecycle="false" sizeInMB="1024" />

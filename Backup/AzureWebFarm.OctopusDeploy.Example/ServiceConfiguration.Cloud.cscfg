@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="AzureWebFarmOctopus" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2013-10.2.2">
+  <Role name="ExampleWebFarm">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="webfarmadmin" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEDkO5OmSrouZRmX93GADjMAwDQYJKoZIhvcNAQEBBQAEggEAivkEo4uYHsPLkCngwD5t4HXGlTnBl+Fy4Iiw4MEk9TzMVCjt17Kuxi6N16QcQdHkZ85kXJKl4LYFV5EZW4h8eYJwtOEQogii6HLRjXemvEMnRtqNyIX/jr6mSb5YKiHXkyUO1UWcPbVTTSPuTJ2dubTnPMYP/DcbWiGr1Fj7AVxGmSHfXZl3hzWkQQ2YV5vrBUGgrxUbq/cCQ6TmqbZY/TdjWrb+1u0yDH+ByNP5b0vOBwSiD671vuv/MEWG2b733oKqqmB1BLCT2U1O3knsxXxG+qaF+s18i2kS2JTDc+oLYO2cYN0/RdP8zMtyqlYbwoI0vRMBe8ok8Zf67IqUxDAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECPFqhfCLJDgKgBDyG9n6vt1YRODjjNZGXj+o" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2019-12-31T23:59:59.0000000+08:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+      <Setting name="OctopusServer" value="http://OCTOPUSSERVERURL/" />
+      <Setting name="OctopusApiKey" value="API-OCTOPUSAPIKEY" />
+      <Setting name="TentacleEnvironment" value="ENVIRONMENT" />
+      <Setting name="TentacleRole" value="ROLE" />
+      <Setting name="TentacleMachineNameSuffix" value="" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="5BFCF449A37F73EF3875A1682BE5AE5CCB1B553F" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>
