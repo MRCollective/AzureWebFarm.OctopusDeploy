@@ -39,6 +39,9 @@ namespace AzureWebFarm.OctopusDeploy
         {
             _octopusDeploy.ConfigureTentacle();
             _octopusDeploy.DeployAllCurrentReleasesToThisMachine();
+
+            IisEnvironment.PurgeAllDefaultSites();
+
             return true;
         }
 

@@ -23,6 +23,47 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             }
         }
 
+        public static void PurgeAllDefaultSites()
+        {
+            using (var serverManager = new ServerManager())
+            {
+                Guid appGuid;
+
+                var applications = serverManager.ApplicationPools
+                    .Where(appPool => Guid.TryParse(appPool.Name, out appGuid)).ToList();
+
+                if (!applications.Any())
+                {
+                    // There does'nt seem to be any to remove.
+
+                    return;
+                }
+
+                foreach (var appPool in applications)
+                {
+                    // Assumption any pool with name of a GUID was created by Azure.
+                    
+                    appPool.Stop();
+                    
+                    // Find all site & applications using this pool (Should one be one).
+                    
+                    var sites = serverManager.Sites
+                        .Where(site => site.Applications.Any(x => x.ApplicationPoolName == appPool.Name)).ToList();
+
+                    foreach (var site in sites)
+                    {
+                        serverManager.Sites[site.Name].Stop();
+
+                        serverManager.Sites.Remove(site);
+                    }
+
+                    serverManager.ApplicationPools.Remove(appPool);
+                }
+
+                serverManager.CommitChanges();
+            }
+        }
+
         public static void ActivateAppInitialisationModuleForAllSites()
         {
             // https://github.com/sandrinodimattia/WindowsAzure-IISApplicationInitializationModule
