@@ -23,6 +23,42 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             }
         }
 
+        public static void PurgeAllSites()
+        {
+            using (var serverManager = new ServerManager())
+            {
+                var applications = serverManager.ApplicationPools.ToList();
+
+                if (!applications.Any())
+                {
+                    // There is nothing to do.
+
+                    return;
+                }
+
+                foreach (var appPool in applications)
+                {
+                    appPool.Stop();
+                    
+                    // Find all site & applications using this pool.
+                    
+                    var sites = serverManager.Sites
+                        .Where(site => site.Applications.Any(x => x.ApplicationPoolName == appPool.Name)).ToList();
+
+                    foreach (var site in sites)
+                    {
+                        serverManager.Sites[site.Name].Stop();
+
+                        serverManager.Sites.Remove(site);
+                    }
+
+                    serverManager.ApplicationPools.Remove(appPool);
+                }
+
+                serverManager.CommitChanges();
+            }
+        }
+
         public static void ActivateAppInitialisationModuleForAllSites()
         {
             // https://github.com/sandrinodimattia/WindowsAzure-IISApplicationInitializationModule

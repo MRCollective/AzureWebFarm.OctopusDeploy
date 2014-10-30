@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.Design;
+using System.Net.Configuration;
 using System.Threading;
 using AzureWebFarm.OctopusDeploy.Infrastructure;
 using Microsoft.WindowsAzure.ServiceRuntime;
@@ -12,12 +14,14 @@ namespace AzureWebFarm.OctopusDeploy
     public class WebFarmRole
     {
         private readonly Infrastructure.OctopusDeploy _octopusDeploy;
+        private readonly bool _purgesites;
 
         /// <summary>
         /// Create the web role coordinator.
         /// </summary>
         /// <param name="machineName">Specify the machineName if you would like to override the default machine name configuration.</param>
-        public WebFarmRole(string machineName = null)
+        /// <param name="purgeSites">Specify true to remove all sites before installing the tentacle</param>
+        public WebFarmRole(string machineName = null,bool purgeSites = false)
         {
             Log.Logger = AzureEnvironment.GetAzureLogger();
             var config = AzureEnvironment.GetConfigSettings();
@@ -26,7 +30,9 @@ namespace AzureWebFarm.OctopusDeploy
             var octopusRepository = Infrastructure.OctopusDeploy.GetRepository(config);
             var processRunner = new ProcessRunner();
             var registryEditor = new RegistryEditor();
+            
             _octopusDeploy = new Infrastructure.OctopusDeploy(machineName, config, octopusRepository, processRunner, registryEditor);
+            _purgesites = purgeSites;
 
             AzureEnvironment.RequestRecycleIfConfigSettingChanged(config);
         }
@@ -37,8 +43,14 @@ namespace AzureWebFarm.OctopusDeploy
         /// <returns>true; throws exception is there is an error</returns>
         public bool OnStart()
         {
+            if (_purgesites)
+            {
+                IisEnvironment.PurgeAllSites();
+            }
+            
             _octopusDeploy.ConfigureTentacle();
             _octopusDeploy.DeployAllCurrentReleasesToThisMachine();
+            
             return true;
         }
 
