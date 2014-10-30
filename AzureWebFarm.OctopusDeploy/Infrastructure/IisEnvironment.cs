@@ -23,29 +23,24 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             }
         }
 
-        public static void PurgeAllDefaultSites()
+        public static void PurgeAllSites()
         {
             using (var serverManager = new ServerManager())
             {
-                Guid appGuid;
-
-                var applications = serverManager.ApplicationPools
-                    .Where(appPool => Guid.TryParse(appPool.Name, out appGuid)).ToList();
+                var applications = serverManager.ApplicationPools.ToList();
 
                 if (!applications.Any())
                 {
-                    // There does'nt seem to be any to remove.
+                    // There is nothing to do.
 
                     return;
                 }
 
                 foreach (var appPool in applications)
                 {
-                    // Assumption any pool with name of a GUID was created by Azure.
-                    
                     appPool.Stop();
                     
-                    // Find all site & applications using this pool (Should one be one).
+                    // Find all site & applications using this pool.
                     
                     var sites = serverManager.Sites
                         .Where(site => site.Applications.Any(x => x.ApplicationPoolName == appPool.Name)).ToList();
