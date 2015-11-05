@@ -7,7 +7,6 @@ using Microsoft.Win32;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Platform.Model;
 using Serilog;
 
 namespace AzureWebFarm.OctopusDeploy.Infrastructure
