@@ -65,17 +65,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.Storage.2.1.0.3\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Octopus.Platform, Version=2.0.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.12.1092\lib\net40\Octopus.Platform.dll</HintPath>
+    <Reference Include="Octopus.Client, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octopus.Client.3.2.0\lib\net40\Octopus.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,10 +84,6 @@
     <Reference Include="Serilog.Sinks.AzureTableStorage, Version=1.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Serilog.Sinks.AzureTableStorage.1.2.25\lib\net45\Serilog.Sinks.AzureTableStorage.dll</HintPath>
-    </Reference>
-    <Reference Include="Sprache, Version=1.10.0.35, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Sprache.1.10.0.35\lib\net40\Sprache.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

@@ -8,7 +8,6 @@ using AzureWebFarm.OctopusDeploy.Infrastructure;
 using NSubstitute;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Platform.Model;
 using Xunit;
 using Shouldly;
 
