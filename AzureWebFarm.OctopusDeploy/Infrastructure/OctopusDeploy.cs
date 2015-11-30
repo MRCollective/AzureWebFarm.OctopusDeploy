@@ -37,12 +37,43 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         {
             var tentacleDeploymentsPath = _config.TentacleDeploymentsPath;
 
+            HandleFailedRemoval();
+
             _processRunner.Run(_tentaclePath, string.Format("create-instance {0} --config \"{1}\" --console", InstanceArg, Path.Combine(_tentacleInstallPath, "Tentacle.config")));
             _processRunner.Run(_tentaclePath, string.Format("new-certificate {0} --console", InstanceArg));
             _processRunner.Run(_tentaclePath, string.Format("configure {0} --home \"{1}\" --console", InstanceArg, tentacleDeploymentsPath.Substring(0, tentacleDeploymentsPath.Length - 1)));
             _processRunner.Run(_tentaclePath, string.Format("configure {0} --app \"{1}\" --console", InstanceArg, Path.Combine(tentacleDeploymentsPath, "Applications")));
             _processRunner.Run(_tentaclePath, string.Format("register-with {0} --server \"{1}\" --environment \"{2}\" --role \"{3}\" --apiKey \"{4}\" --name \"{5}\" --comms-style TentacleActive --force --console", InstanceArg, _config.OctopusServer, _config.TentacleEnvironment, _config.TentacleRole, _config.OctopusApiKey, _machineName));
             _processRunner.Run(_tentaclePath, string.Format("service {0} --install --start --console", InstanceArg));
+        }
+
+        private void HandleFailedRemoval()
+        {
+            if (File.Exists(Path.Combine(_tentacleInstallPath, "Tentacle.config")))
+            {
+                try
+                {
+                    Log.Information("Detected existing tentacle.config - possible abrupt restart. Deleting tentacle.config.");
+                    File.Delete(Path.Combine(_tentacleInstallPath, "Tentacle.config"));
+                    Log.Information("Successfully removed tentacle.config from role.");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to remove certificate from Octopus server. Manual intevention required.");
+                }
+
+                try
+                {
+                    Log.Information("Attempting to remove tentacle from Octopus server.");
+                    DeleteMachine();
+                    Log.Information("Successfully removed tentacle from Octopus server.");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to remove tentacle from Octopus server. Manual intevention required.");
+                }
+
+            }
         }
 
         public void DeleteMachine()
