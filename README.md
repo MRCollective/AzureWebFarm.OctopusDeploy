@@ -1,10 +1,13 @@
+![AzureWebFarm.OctopusDeploy logo](https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png)
+
 AzureWebFarm.OctopusDeploy
 ==========================
 
-This project allows you to easily create an [infinitely-scalable farm of IIS 8 / Windows Server 2012 web servers using Windows Azure Web Roles](http://www.windowsazure.com/en-us/services/cloud-services/) that are deployed to by an [OctopusDeploy](http://octopusdeploy.com/) server.
+[![Build status](https://ci.mdavies.net/app/rest/builds/buildType:%28id:AWF_OD_CI%29,branch:%28default:true%29/statusIcon)](https://ci.mdavies.net/viewType.html?buildTypeId=AWF_OD_CI&branch_AWF_OD=%3Cdefault%3E&tab=buildTypeStatusDiv&guest=1) 
+[![NuGet downloads](https://img.shields.io/nuget/dt/AzureWebFarm.OctopusDeploy.svg)](https://www.nuget.org/packages/ChameleonForms) 
+[![NuGet version](https://img.shields.io/nuget/vpre/AzureWebFarm.OctopusDeploy.svg)](https://www.nuget.org/packages/ChameleonForms)
 
-![AzureWebFarm.OctopusDeploy logo](https://raw.github.com/MRCollective/AzureWebFarm.OctopusDeploy/master/logo.png)
-Logo courtesy of Aoife Doyle (thanks so much - it's awesome!)
+This project allows you to easily create an [infinitely-scalable farm of IIS 8 / Windows Server 2012 web servers using Windows Azure Web Roles](http://www.windowsazure.com/en-us/services/cloud-services/) that are deployed to by an [OctopusDeploy](http://octopusdeploy.com/) server.
 
 It's really easy to get up and running - more details below, but in short:
 
@@ -30,6 +33,8 @@ tl;dr
     * [If you are deploying web applications to Windows Azure](#if-you-are-deploying-web-applications-to-windows-azure)
 * [Contributing](#contributing)
 * [Stay abreast of the latest changes / releases](#stay-abreast-of-the-latest-changes--releases)
+
+Logo courtesy of Aoife Doyle (thanks so much - it's awesome!)
 
 Pre-requisites
 --------------
