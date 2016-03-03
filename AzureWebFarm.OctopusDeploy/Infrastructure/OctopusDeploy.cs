@@ -53,7 +53,8 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
             {
                 try
                 {
-                    Log.Information("Detected existing tentacle.config - possible abrupt restart. Deleting tentacle.config.");
+                    Log.Information(
+                        "Detected existing tentacle.config - possible abrupt restart. Deleting tentacle.config.");
                     File.Delete(Path.Combine(_tentacleInstallPath, "Tentacle.config"));
                     Log.Information("Successfully removed tentacle.config from role.");
                 }
@@ -61,10 +62,13 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                 {
                     Log.Error(e, "Failed to remove certificate from Octopus server. Manual intevention required.");
                 }
+            }
 
+            if (_repository.Machines.FindByName(_machineName) != null)
+            {
                 try
                 {
-                    Log.Information("Attempting to remove tentacle from Octopus server.");
+                    Log.Information("Detected existing machine using this name. Attempting to remove tentacle from Octopus server.");
                     DeleteMachine();
                     Log.Information("Successfully removed tentacle from Octopus server.");
                 }
@@ -72,7 +76,6 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                 {
                     Log.Error(e, "Failed to remove tentacle from Octopus server. Manual intevention required.");
                 }
-
             }
         }
 
@@ -100,7 +103,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                             Comments = "Automated startup deployment by " + _machineName,
                             EnvironmentId = currentRelease.EnvironmentId,
                             ReleaseId = currentRelease.ReleaseId,
-                            SpecificMachineIds = new ReferenceCollection(new[] {machineId})
+                            SpecificMachineIds = new ReferenceCollection(new[] { machineId })
                         }
                     ))
                     .Select(d => d.TaskId)
