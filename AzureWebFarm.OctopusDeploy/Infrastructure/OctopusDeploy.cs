@@ -78,6 +78,20 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
 
         public void DeleteMachine()
         {
+            try
+            {
+                DeleteMachineInternal();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Initial attempt to remove machine from Octopus repository failed. Will retry 1 time.");
+                DeleteMachineInternal();
+                Log.Information("Successfully deleted machine from Octopus repository");
+            }
+        }
+
+        private void DeleteMachineInternal()
+        {
             var machine = _repository.Machines.FindByName(_machineName);
             _repository.Machines.Delete(machine);
         }
