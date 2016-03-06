@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace WebFarm
@@ -19,7 +20,7 @@ namespace WebFarm
 
         public override void Run()
         {
-            _webFarmRole.Run(new CancellationTokenSource().Token).Wait();
+            Task.Run(() => _webFarmRole.Run(new CancellationTokenSource().Token)).Wait();
         }
 
         public override void OnStop()
