@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Net.Configuration;
 using System.Threading;
+using System.Threading.Tasks;
 using AzureWebFarm.OctopusDeploy.Infrastructure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Serilog;
@@ -58,26 +59,37 @@ namespace AzureWebFarm.OctopusDeploy
         /// Call from the RoleEntryPoint.Run() method.
         /// Note: This method is an infinite loop; call from a Thread/Task if you want to run other code alongside.
         /// </summary>
-        public void Run()
+        public async Task Run(CancellationToken token)
         {
             // Don't want to configure IIS if we are emulating; just sleep forever
-            if (RoleEnvironment.IsEmulated)
-                Thread.Sleep(-1);
-
-            while (true)
+            try
             {
-                try
+                if (RoleEnvironment.IsEmulated)
                 {
-                    IisEnvironment.ActivateAppInitialisationModuleForAllSites();
-                }
-                catch (Exception e)
-                {
-                    Log.Warning(e, "Failure to configure IIS");
+                    while (!token.IsCancellationRequested)
+                    {
+                        await Task.Delay(100, token);
+                    }
                 }
 
-                Thread.Sleep(TimeSpan.FromMinutes(10));
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        IisEnvironment.ActivateAppInitialisationModuleForAllSites();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Warning(e, "Failure to configure IIS");
+                    }
+
+                    await Task.Delay(TimeSpan.FromMinutes(10), token);
+                }
             }
-        // ReSharper disable FunctionNeverReturns
+            catch (TaskCanceledException)
+            {
+            }
+            // ReSharper disable FunctionNeverReturns
         }
         // ReSharper restore FunctionNeverReturns
 
