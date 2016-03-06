@@ -28,6 +28,7 @@
       <InputEndpoint name="HTTP" protocol="http" port="80" />
     </Endpoints>
     <Imports>
+      <Import moduleName="Diagnostics" />
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
     </Imports>
