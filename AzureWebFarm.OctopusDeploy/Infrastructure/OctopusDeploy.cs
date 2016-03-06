@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.Win32;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Octopus.Client;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Serilog;
 
@@ -52,28 +53,52 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
         }
 
         public void DeployAllCurrentReleasesToThisMachine()
-        {
+        {            
+            const string targetRolePropertyName = "Octopus.Action.TargetRoles";
             List<TaskState> currentStatuses;
             try
             {
                 var machineId = _repository.Machines.FindByName(_machineName).Id;
                 var environment = _repository.Environments.FindByName(_config.TentacleEnvironment).Id;
+                var projects = _repository.Projects.FindAll()
+                    .Where(p => _repository.DeploymentProcesses
+                               .Get(p.DeploymentProcessId)
+                               .Steps
+                               .Any(s =>
+                                    {
+                                        string value;
+                                        return s.Properties.TryGetValue(targetRolePropertyName, out value) && value == _config.TentacleRole;
+                                    }))
+                    .Select(p => p.Id);
 
                 var dashboard = _repository.Dashboards.GetDashboard();
-                var releaseTasks = dashboard.Items
+                var dashboardItems = dashboard.Items
                     .Where(i => i.EnvironmentId == environment)
-                    .ToList()
-                    .Select(currentRelease => _repository.Deployments.Create(
-                        new DeploymentResource
-                        {
-                            Comments = "Automated startup deployment by " + _machineName,
-                            EnvironmentId = currentRelease.EnvironmentId,
-                            ReleaseId = currentRelease.ReleaseId,
-                            SpecificMachineIds = new ReferenceCollection(new[] {machineId})
-                        }
-                    ))
-                    .Select(d => d.TaskId)
+                    .Where(i => projects.Contains(i.ProjectId))
                     .ToList();
+
+                var releaseTasks = new List<string>();
+                foreach (var currentRelease in dashboardItems)
+                {
+                    try
+                    {
+                        var deployment = _repository.Deployments.Create(new DeploymentResource
+                                                       {
+                                                           Comments = "Automated startup deployment by " + _machineName,
+                                                           EnvironmentId = currentRelease.EnvironmentId,
+                                                           ReleaseId = currentRelease.ReleaseId,
+                                                           SpecificMachineIds = new ReferenceCollection(new[] {machineId})
+                                                       });
+                        releaseTasks.Add(deployment.TaskId);
+                    }
+                    catch (OctopusValidationException ex)
+                    {
+                        Log.Error("Attempted to craete a deploy that the server didn't like.", ex);
+                        // Rethowing the exception here as an exception so Azure doens't have kittens trying to serialize it
+                        throw new Exception("Attempted to craete a deploy that the server didn't like.", ex);
+                    }
+                }
+  
                 Log.Information("Triggered deployments with task ids: {taskIds}", releaseTasks);
 
                 var taskStatuses = releaseTasks.Select(taskId => _repository.Tasks.Get(taskId).State);
@@ -105,6 +130,11 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
 
         public void UninstallTentacle()
         {
+            var machineResource = _repository.Machines.FindByName(_machineName);
+            if (machineResource != null)
+            {
+                _repository.Machines.Delete(machineResource);
+            }
             _processRunner.Run(_tentaclePath, string.Format("service {0} --stop --uninstall --console", InstanceArg));
             _processRunner.Run(_tentaclePath, string.Format("delete-instance {0} --console", InstanceArg));
             _processRunner.Run("msiexec", string.Format("/uninstall \"{0}{1}\" /quiet", _tentacleInstallPath, "Octopus.Tentacle.msi"));
