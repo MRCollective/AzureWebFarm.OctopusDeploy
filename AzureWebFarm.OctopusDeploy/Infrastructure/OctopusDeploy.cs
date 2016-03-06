@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Microsoft.Win32;
-using Microsoft.WindowsAzure.ServiceRuntime;
 using Octopus.Client;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Serilog;
 
@@ -15,14 +14,14 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
     {
         private const string InstanceArg = "--instance \"Tentacle\"";
         private readonly string _machineName;
-        private readonly ConfigSettings _config;
+        private readonly IConfigSettings _config;
         private readonly IProcessRunner _processRunner;
         private readonly IRegistryEditor _registryEditor;
         private readonly IOctopusRepository _repository;
         private readonly string _tentaclePath;
         private readonly string _tentacleInstallPath;
 
-        public OctopusDeploy(string machineName, ConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner, IRegistryEditor registryEditor)
+        public OctopusDeploy(string machineName, IConfigSettings config, IOctopusRepository repository, IProcessRunner processRunner, IRegistryEditor registryEditor)
         {
             _machineName = machineName;
             _config = config;
@@ -87,36 +86,63 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
 
         public void DeployAllCurrentReleasesToThisMachine()
         {
+            const string targetRolePropertyName = "Octopus.Action.TargetRoles";
             List<TaskState> currentStatuses;
             try
             {
                 var machineId = _repository.Machines.FindByName(_machineName).Id;
                 var environment = _repository.Environments.FindByName(_config.TentacleEnvironment).Id;
 
+                var projects = _repository.Projects.FindAll()
+                    .Where(p => _repository.DeploymentProcesses
+                               .Get(p.DeploymentProcessId)
+                               .Steps
+                               .Any(s =>
+                               {
+                                   string value;
+                                   return s.Properties.TryGetValue(targetRolePropertyName, out value) && value == _config.TentacleRole;
+                               }))
+                    .Select(p => p.Id);
+
                 var dashboard = _repository.Dashboards.GetDashboard();
-                var releaseTasks = dashboard.Items
+                var dashboardItems = dashboard.Items
                     .Where(i => i.EnvironmentId == environment)
-                    .ToList()
-                    .Select(currentRelease => _repository.Deployments.Create(
-                        new DeploymentResource
+                    .Where(i => projects.Contains(i.ProjectId))
+                    .ToList();
+
+                var releaseTasks = new List<string>();
+                foreach (var currentRelease in dashboardItems)
+                {
+                    try
+                    {
+                        var deployment = _repository.Deployments.Create(new DeploymentResource
                         {
                             Comments = "Automated startup deployment by " + _machineName,
                             EnvironmentId = currentRelease.EnvironmentId,
                             ReleaseId = currentRelease.ReleaseId,
                             SpecificMachineIds = new ReferenceCollection(new[] { machineId })
-                        }
-                    ))
-                    .Select(d => d.TaskId)
-                    .ToList();
+                        });
+                        releaseTasks.Add(deployment.TaskId);
+                    }
+                    catch (OctopusValidationException ex)
+                    {
+                        Log.Error("Attempted to create a deployment that the OctopusDeploy server didn't like.", ex);
+                        // Rethowing the exception here so Azure doesn't fail trying to serialize it
+                        throw new Exception("Attempted to create a deployment that the OctopusDeploy server didn't like.", ex);
+                    }
+                }
+
                 Log.Information("Triggered deployments with task ids: {taskIds}", releaseTasks);
 
                 var taskStatuses = releaseTasks.Select(taskId => _repository.Tasks.Get(taskId).State);
 
+                // ReSharper disable once PossibleMultipleEnumeration
                 currentStatuses = taskStatuses.ToList();
                 while (currentStatuses.Any(s => s == TaskState.Executing || s == TaskState.Queued))
                 {
                     Log.Debug("Waiting for deployments; current statuses: {statuses}", currentStatuses);
                     Thread.Sleep(1000);
+                    // ReSharper disable once PossibleMultipleEnumeration
                     currentStatuses = taskStatuses.ToList();
                 }
 
@@ -132,7 +158,7 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                 throw new Exception("Failed to deploy to this role - at least one necessary deployment either failed or timed out - recycling role to try again");
         }
 
-        public static IOctopusRepository GetRepository(ConfigSettings config)
+        public static IOctopusRepository GetRepository(IConfigSettings config)
         {
             return new OctopusRepository(new OctopusServerEndpoint(config.OctopusServer, config.OctopusApiKey));
         }
