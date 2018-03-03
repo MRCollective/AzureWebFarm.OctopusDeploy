@@ -3,7 +3,7 @@
 AzureWebFarm.OctopusDeploy
 ==========================
 
-[![Build status](https://ci.mdavies.net/app/rest/builds/buildType:%28id:AWF_OD_CI%29,branch:%28default:true%29/statusIcon)](https://ci.mdavies.net/viewType.html?buildTypeId=AWF_OD_CI&branch_AWF_OD=%3Cdefault%3E&tab=buildTypeStatusDiv&guest=1) 
+[![Build status](https://ci.appveyor.com/api/projects/status/73ygg2obk5dloshr?svg=true)](https://ci.appveyor.com/project/MRCollective/azurewebfarm-octopusdeploy)
 [![NuGet downloads](https://img.shields.io/nuget/dt/AzureWebFarm.OctopusDeploy.svg)](https://www.nuget.org/packages/AzureWebFarm.OctopusDeploy) 
 [![NuGet version](https://img.shields.io/nuget/vpre/AzureWebFarm.OctopusDeploy.svg)](https://www.nuget.org/packages/AzureWebFarm.OctopusDeploy)
 
