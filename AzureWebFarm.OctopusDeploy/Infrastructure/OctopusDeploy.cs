@@ -99,8 +99,10 @@ namespace AzureWebFarm.OctopusDeploy.Infrastructure
                                .Steps
                                .Any(s =>
                                {
-                                   string value;
-                                   return s.Properties.TryGetValue(targetRolePropertyName, out value) && value == _config.TentacleRole;
+                                   PropertyValueResource value;
+                                   return s.Properties.TryGetValue(targetRolePropertyName, out value) 
+                                       && value != null 
+                                       && value.Value.Split(',').Any(x => x.ToLowerInvariant() ==  _config.TentacleRole.ToLowerInvariant());
                                }))
                     .Select(p => p.Id);
 
